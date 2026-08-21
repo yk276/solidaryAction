@@ -10,19 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Doacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String nome;
+    public int valorDoado;
 
-    public String cpf;
-
-    public String senha;
-
-    public String email;
 
 
 }
