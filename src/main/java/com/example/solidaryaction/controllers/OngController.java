@@ -3,6 +3,8 @@ package com.example.solidaryaction.controllers;
 
 import com.example.solidaryaction.entities.Ong;
 import com.example.solidaryaction.repository.OngRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ongs")
+@Tag(name = "Ongs", description = "Grupos de Ong'S")
 public class OngController {
 
     @Autowired
     private OngRepository ongRepository;
 
+    @Operation(summary = "Metodo de consulta de lista de ongs!", description = "Metodo responsavel em efetuar a consulta de todos as Ongs")
     @GetMapping
     public ResponseEntity<?> listarTodos(){
 
