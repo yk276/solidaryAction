@@ -18,8 +18,9 @@ public class OngController {
     @Autowired
     private OngRepository ongRepository;
 
-    @Operation(summary = "Metodo de consulta de lista de ongs!", description = "Metodo responsavel em efetuar a consulta de todos as Ongs")
+
     @GetMapping
+    @Operation(summary = "Metodo de consulta de lista de ongs!", description = "Metodo responsavel em efetuar a consulta de todos as Ongs")
     public ResponseEntity<?> listarTodos(){
 
         return  ResponseEntity.ok(ongRepository.findAll());
@@ -27,6 +28,7 @@ public class OngController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Metodo de criação de ongs!", description = "Metodo responsável em efetuar a criação de novas ongs!")
     public ResponseEntity<Ong> criar(@RequestBody Ong ong){
 
         var ongBanco = ongRepository.save(ong);

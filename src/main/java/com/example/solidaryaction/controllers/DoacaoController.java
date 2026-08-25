@@ -18,8 +18,9 @@ public class DoacaoController {
     @Autowired
     private DoacaoRepository doacaoRepository;
 
-    @Operation(summary = "Metodo de consulta de lista de doacoes!", description = "Metodo responsavel em efetuar a consulta de todos as doacoes")
+
     @GetMapping
+    @Operation(summary = "Metodo de consulta de lista de doacoes!", description = "Metodo responsavel em efetuar a consulta de todas as doacoes")
     public ResponseEntity<?> listarTodos(){
 
         return  ResponseEntity.ok(doacaoRepository.findAll());
@@ -27,6 +28,7 @@ public class DoacaoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Metodo de criação de doações!", description = "Metodo responsável em efetuar a criação de novas doações!")
     public ResponseEntity<Doacao> criar(@RequestBody Doacao doacao){
 
         var doacaoBanco = doacaoRepository.save(doacao);
