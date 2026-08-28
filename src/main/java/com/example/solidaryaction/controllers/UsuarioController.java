@@ -28,7 +28,7 @@ public class UsuarioController {
     }
 
 
-    @PostMapping
+    @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Metodo de criação de usuarios!", description = "Metodo responsavel em efetuar a criação de novos usuários!")
     public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario){
