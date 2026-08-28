@@ -37,5 +37,9 @@ public class UsuarioController {
 
     }
 
+    @PutMapping
+    public Usuario atualizar(){
+    return new Usuario();
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.example.solidaryaction.controllers;
 
+import com.example.solidaryaction.DTOs.CadastroRequest;
 import com.example.solidaryaction.DTOs.LoginRequest;
 import com.example.solidaryaction.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +22,12 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
+    @PostMapping("/cadastrar")
+    @Operation(description = "Cadastro de usuários", summary = "Método para cadastrar usuários")
+    public ResponseEntity<?> cadastrar(@RequestBody CadastroRequest cadastroRequest){
+
+    }
+
     @PostMapping("/login")
     @Operation(description = "Metodo de login", summary = "Autenticação de usuários")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -30,7 +37,7 @@ public class AuthController {
 
             var token = tokenService.gerarToken(loginRequest.email());
 
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok(token);
         }
         return ResponseEntity.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
     }
