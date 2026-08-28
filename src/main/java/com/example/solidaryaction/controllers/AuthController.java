@@ -22,11 +22,7 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/cadastrar")
-    @Operation(description = "Cadastro de usuários", summary = "Método para cadastrar usuários")
-    public ResponseEntity<?> cadastrar(@RequestBody CadastroRequest cadastroRequest){
 
-    }
 
     @PostMapping("/login")
     @Operation(description = "Metodo de login", summary = "Autenticação de usuários")

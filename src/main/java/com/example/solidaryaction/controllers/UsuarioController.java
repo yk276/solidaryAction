@@ -1,5 +1,6 @@
 package com.example.solidaryaction.controllers;
 
+import com.example.solidaryaction.DTOs.CadastroRequest;
 import com.example.solidaryaction.entities.Usuario;
 import com.example.solidaryaction.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,18 @@ public class UsuarioController {
         var usuarioBanco = usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuarioBanco);
 
+    }
+
+    @PostMapping("/cadastrar")
+    @Operation(description = "Cadastro de usuários", summary = "Método para cadastrar usuários")
+    public ResponseEntity<?> cadastrar(@RequestBody CadastroRequest cadastroRequest){
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(cadastroRequest.nome());
+        usuario.setCpf(cadastroRequest.cpf());
+        usuario.setEmail(cadastroRequest.email());
+        var usuarioBanco = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(usuarioBanco);
     }
 
     @PutMapping
