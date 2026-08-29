@@ -2,6 +2,8 @@ package com.example.solidaryaction.controllers;
 
 import com.example.solidaryaction.DTOs.CadastroRequest;
 import com.example.solidaryaction.DTOs.LoginRequest;
+import com.example.solidaryaction.DTOs.LoginResponse;
+import com.example.solidaryaction.repository.UsuarioRepository;
 import com.example.solidaryaction.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,24 +18,27 @@ import java.net.HttpURLConnection;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(description = "Controller de autenticação!", name = "Autenticação")
+@Tag(description = "Controller responsavel pela autenticação!", name = "Autenticação controller")
 public class AuthController {
 
     @Autowired
     private TokenService tokenService;
 
-
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @PostMapping("/login")
-    @Operation(description = "Metodo de login", summary = "Autenticação de usuários")
+    @Operation(summary = "Login", description = "Metodo responsavel por efetuar o login do usuario")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
 
-        if(loginRequest.email().equals("string")&& loginRequest.senha().equals("string")){
+
+
+        if(usuarioRepository.existsUsuarioByEmailAndSenha(loginRequest.email(), loginRequest.senha())){
             //gerar o token
 
             var token = tokenService.gerarToken(loginRequest.email());
 
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(new LoginResponse(token));
         }
         return ResponseEntity.status(HttpURLConnection.HTTP_UNAUTHORIZED).build();
     }

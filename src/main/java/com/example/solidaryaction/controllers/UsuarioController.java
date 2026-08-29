@@ -1,6 +1,8 @@
 package com.example.solidaryaction.controllers;
 
+import com.example.solidaryaction.DTOs.AtualizarStatusRequest;
 import com.example.solidaryaction.DTOs.CadastroRequest;
+import com.example.solidaryaction.entities.EnumStatusUsuario;
 import com.example.solidaryaction.entities.Usuario;
 import com.example.solidaryaction.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,9 +40,63 @@ public class UsuarioController {
 
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if(usuarioBanco != null){
+            return ResponseEntity.ok(usuarioBanco);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if(usuarioBanco != null ){
+            usuarioBanco.setStatus(statusRequest.status());
+            usuarioRepository.save(usuarioBanco);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
+        try{
+            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+            if(usuarioBanco != null) {
+                usuarioBanco.setStatus(usuario.getStatus());
+                usuarioBanco.setNome(usuario.getNome());
+                usuarioBanco.setCpf(usuario.getCpf());
+                usuarioBanco.setEmail(usuario.getEmail());
+                usuarioBanco.setSenha(usuario.getSenha());
+                usuarioRepository.save(usuarioBanco);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/{id}/excluir")
+    public ResponseEntity<Void> excluir(@PathVariable Long id){
+
+        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
+        if(usuarioBanco != null ){
+            usuarioBanco.setStatus(EnumStatusUsuario.EXCLUIDO);
+            usuarioRepository.save(usuarioBanco);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
+
     @PostMapping("/cadastrar")
-    @Operation(description = "Cadastro de usuários", summary = "Método para cadastrar usuários")
-    public ResponseEntity<?> cadastrar(@RequestBody CadastroRequest cadastroRequest){
+    @Operation(summary = "Metodo de cadastro de usuários", description = "Método responsavel em efetuar o cadastro de novos usuários")
+    public ResponseEntity<Usuario> cadastrar(@RequestBody CadastroRequest cadastroRequest){
 
         Usuario usuario = new Usuario();
         usuario.setNome(cadastroRequest.nome());
@@ -49,10 +105,4 @@ public class UsuarioController {
         var usuarioBanco = usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuarioBanco);
     }
-
-    @PutMapping
-    public Usuario atualizar(){
-    return new Usuario();
-    }
-
 }
