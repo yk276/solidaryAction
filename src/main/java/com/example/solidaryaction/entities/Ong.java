@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -29,5 +31,7 @@ public class Ong {
 
     public String endereco;
 
-    public int totalArrecadado;
+    public BigDecimal totalArrecadado;
+
+    public EnumStatusOng status = EnumStatusOng.ATIVO;
 }

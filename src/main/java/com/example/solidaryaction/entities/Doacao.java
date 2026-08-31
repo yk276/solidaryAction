@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,8 +21,11 @@ public class Doacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public int valorDoado;
+    public LocalDateTime dataDoacao;
+
+    public BigDecimal valorDoado;
 
     public String descricao;
 
+    public EnumStatusDoacao status = EnumStatusDoacao.PENDENTE;
 }

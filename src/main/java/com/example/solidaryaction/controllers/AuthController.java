@@ -31,8 +31,6 @@ public class AuthController {
     @Operation(summary = "Login", description = "Metodo responsavel por efetuar o login do usuario")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
 
-
-
         if(usuarioRepository.existsUsuarioByEmailAndSenha(loginRequest.email(), loginRequest.senha())){
             //gerar o token
 

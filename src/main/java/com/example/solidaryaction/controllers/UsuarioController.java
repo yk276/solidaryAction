@@ -16,14 +16,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
-@Tag(name = "Usuarios", description = "Grupos de Api's responsável por estruturar de criação e consulta de usuários do sistema!")
+@Tag(name = "Usuários", description = "Controller responsável pela gestão de usuários do sistema.")
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @GetMapping
-    @Operation(summary = "Metodo de consulta de lista de usuarios!", description = "Metodo responsavel em efetuar a consulta de todos os usuários sem filtro")
+    @Operation(summary = "Listar usuários", description = "Método responsável por consultar todos os usuários cadastrados.")
     public ResponseEntity<?> listarTodos(){
 
         return  ResponseEntity.ok(usuarioRepository.findAll());
@@ -32,7 +32,7 @@ public class UsuarioController {
 
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Metodo de criação de usuarios!", description = "Metodo responsavel em efetuar a criação de novos usuários!")
+    @Operation(summary = "Criar usuário", description = "Método responsável por registrar um novo usuário no sistema.")
     public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario){
 
         var usuarioBanco = usuarioRepository.save(usuario);
@@ -41,6 +41,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar usuário por ID", description = "Método responsável por consultar um usuário específico pelo seu identificador.")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -51,6 +52,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/status")
+    @Operation(summary = "Atualizar status do usuário", description = "Método responsável por alterar o status do usuário.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -63,6 +65,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar usuário", description = "Método responsável por atualizar os dados do um usuário.")
     public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
         try{
             Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -82,6 +85,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Excluir usuário", description = "Método responsável por excluir um usuário existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
         Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
@@ -95,7 +99,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastrar")
-    @Operation(summary = "Metodo de cadastro de usuários", description = "Método responsavel em efetuar o cadastro de novos usuários")
+    @Operation(summary = "Cadastrar usuário", description = "Método responsável por efetuar o cadastro de um novo usuário.")
     public ResponseEntity<Usuario> cadastrar(@RequestBody CadastroRequest cadastroRequest){
 
         Usuario usuario = new Usuario();

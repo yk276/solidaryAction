@@ -8,26 +8,30 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Doador {
-
+public class Campanha {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public String nome;
+    public String titulo;
 
-    public String cpf;
+    public String descricao;
 
-    public String email;
+    public BigDecimal metaFinanceira;
 
-    public String profissao;
+    public BigDecimal totalArrecadado;
 
-    public String endereco;
+    public LocalDate dataInicio;
 
-    public EnumStatusDoador status = EnumStatusDoador.ATIVO;
+    public LocalDate dataFim;
+
+    public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
 }

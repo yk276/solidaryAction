@@ -1,7 +1,9 @@
 package com.example.solidaryaction.controllers;
 
 
+import com.example.solidaryaction.DTOs.AtualizarStatusRequestDoacao;
 import com.example.solidaryaction.entities.Doacao;
+import com.example.solidaryaction.entities.EnumStatusDoacao;
 import com.example.solidaryaction.repository.DoacaoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/doacoes")
-@Tag(name = "Doacao", description = "Grupos de doacoes")
+@Tag(name = "Doações", description = "Controller responsável pela gestão das doações do sistema.")
 public class DoacaoController {
 
     @Autowired
@@ -20,7 +22,7 @@ public class DoacaoController {
 
 
     @GetMapping
-    @Operation(summary = "Metodo de consulta de lista de doacoes!", description = "Metodo responsavel em efetuar a consulta de todas as doacoes")
+    @Operation(summary = "Listar doações", description = "Método responsável por consultar todas as doações registradas.")
     public ResponseEntity<?> listarTodos(){
 
         return  ResponseEntity.ok(doacaoRepository.findAll());
@@ -28,7 +30,7 @@ public class DoacaoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Metodo de criação de doações!", description = "Metodo responsável em efetuar a criação de novas doações!")
+    @Operation(summary = "Criar doação", description = "Método responsável por criar uma nova doação na plataforma.")
     public ResponseEntity<Doacao> criar(@RequestBody Doacao doacao){
 
         var doacaoBanco = doacaoRepository.save(doacao);
@@ -36,5 +38,60 @@ public class DoacaoController {
 
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar doação por ID", description = "Método responsável por consultar uma doação específica.")
+    public ResponseEntity<Doacao> buscarPorId(@PathVariable Long id){
+
+        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
+        if(doacaoBanco != null){
+            return ResponseEntity.ok(doacaoBanco);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    @Operation(summary = "Atualizar status da doação", description = "Método responsável por alterar o status de uma doação.")
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestDoacao statusRequestDoacao){
+
+        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
+        if(doacaoBanco != null ){
+            doacaoBanco.setStatus(statusRequestDoacao.status());
+            doacaoRepository.save(doacaoBanco);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Atualizar doação", description = "Método responsável por atualizar os dados de uma doação.")
+    public ResponseEntity<Doacao> atualizar(@PathVariable Long id, @RequestBody Doacao doacao){
+        try{
+            Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
+            if(doacaoBanco != null) {
+                doacaoBanco.setDataDoacao(doacao.getDataDoacao());
+                doacaoBanco.setValorDoado(doacao.getValorDoado());
+                doacaoBanco.setDescricao(doacao.getDescricao());
+                doacaoRepository.save(doacaoBanco);
+                return ResponseEntity.ok().build();
+            }
+            return ResponseEntity.notFound().build();
+        }catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @DeleteMapping("/{id}/excluir")
+    @Operation(summary = "Excluir doação", description = "Método responsável por excluir uma doação existente do sistema.")
+    public ResponseEntity<Void> excluir(@PathVariable Long id){
+
+        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
+        if(doacaoBanco != null ){
+            doacaoBanco.setStatus(EnumStatusDoacao.EXCLUIDO);
+            doacaoRepository.save(doacaoBanco);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
 
 }
