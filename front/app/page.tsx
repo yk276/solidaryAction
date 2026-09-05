@@ -1,3 +1,4 @@
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -20,16 +21,12 @@ export default function Home() {
           {/* Navegação e Login */}
           <div className="flex items-center gap-6">
             <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="#sobre" className="hover:text-purple-600 transition">Nossa História</a>
-              <a href="#impacto" className="hover:text-purple-600 transition">Impacto</a>
-              <a href="#ongs" className="hover:text-purple-600 transition">Para ONGs</a>
+              <a href="#sobre" className="hover:text-purple-500 transition">Nossa História</a>
+              <a href="#impacto" className="hover:text-purple-500 transition">Impacto</a>
+              <a href="#ongs" className="hover:text-purple-500 transition">Para ONGs</a>
             </nav>
-            <a 
-              href="/login" 
-              className="px-5 py-2.5 rounded-xl border border-purple-200 text-purple-700 font-semibold text-sm hover:bg-purple-50 transition shadow-sm"
-            >
-              Entrar / Login
-            </a>
+            <Link href="/login" 
+              className="px-5 py-2.5 rounded-xl border border-purple-200 text-purple-500 font-semibold text-sm hover:bg-purple-50 transition shadow-sm">Entrar / Login</Link>
           </div>
 
         </div>
@@ -40,17 +37,17 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           
           <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-bold tracking-wide uppercase">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-500 text-xs font-bold tracking-wide uppercase">
               ✨ Transformando doações em impacto real
             </span>
             <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 leading-tight">
-              Conectando <span className="text-purple-600">corações</span> a causas que transformam vidas.
+              Conectando <span className="text-purple-500">corações</span> a causas que transformam vidas.
             </h1>
             <p className="text-lg text-slate-600">
               A <strong>SolidaryAction</strong> é a plataforma definitiva para doações e ONGs. Nossa tecnologia contabiliza, audita e exibe em tempo real cada centavo arrecadado para a sua causa.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <button className="px-8 py-4 rounded-xl bg-green-400 hover:bg-green-500 text-slate-900 font-bold text-base transition shadow-lg shadow-green-400/20 text-center cursor-pointer">
+              <button className="px-8 py-4 rounded-xl bg-green-400 hover:bg-green-500 text-white font-bold text-base transition shadow-lg shadow-green-400/20 text-center cursor-pointer">
                 Quero Doar Agora
               </button>
               <button className="px-8 py-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-base transition shadow-lg shadow-purple-600/20 text-center cursor-pointer">
@@ -74,7 +71,7 @@ export default function Home() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600 font-medium">Total Arrecadado</span>
-                  <span className="font-bold text-purple-700 text-lg">R$ 142.500,00</span>
+                  <span className="font-bold text-purple-500 text-lg">R$ 142.500,00</span>
                 </div>
                 <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                   <div className="bg-gradient-to-r from-purple-600 to-green-400 h-full rounded-full w-[85%]"></div>
@@ -84,7 +81,7 @@ export default function Home() {
 
               <div className="bg-purple-50/50 p-4 rounded-xl border border-purple-100/50 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700 font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-500 font-bold text-xs">
                     ONG
                   </div>
                   <div>
@@ -92,7 +89,7 @@ export default function Home() {
                     <p className="text-[10px] text-slate-500">1.420 doadores conectados</p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-purple-600 bg-white px-3 py-1.5 rounded-lg border border-purple-100 shadow-xs">
+                <span className="text-xs font-bold text-purple-500 bg-white px-3 py-1.5 rounded-lg border border-purple-100 shadow-xs">
                   Ver Histórico
                 </span>
               </div>
@@ -106,7 +103,7 @@ export default function Home() {
       <section id="sobre" className="py-24 bg-white border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-6 text-center space-y-12">
           <div className="space-y-4">
-            <h2 className="text-xs font-extrabold uppercase tracking-widest text-purple-600">Nossa História</h2>
+            <h2 className="text-xs font-extrabold uppercase tracking-widest text-purple-500">Nossa História</h2>
             <h3 className="text-3xl md:text-4xl font-extrabold text-slate-900">
               Como nasceu a SolidaryAction?
             </h3>
@@ -133,7 +130,7 @@ export default function Home() {
             </div>
 
             <div className="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-green-400 text-slate-900 font-bold flex items-center justify-center mx-auto text-xl shadow-md">
+              <div className="w-12 h-12 rounded-xl bg-green-400 text-white font-bold flex items-center justify-center mx-auto text-xl shadow-md">
                 03
               </div>
               <h4 className="font-bold text-slate-800 text-lg">Segurança Total</h4>
