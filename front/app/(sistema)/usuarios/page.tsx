@@ -21,9 +21,7 @@ export default function Usuarios(){
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                Yohanna
-                            </td>
+                            <td>Yohanna</td>
                         </tr>
                     </tbody>
                 </table>
