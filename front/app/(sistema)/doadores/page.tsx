@@ -16,7 +16,7 @@ export default function Doadores(){
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="bg-purple-100 text-purple-800">
-                            <th className="px-4 py-3 font-semibold">Id</th>
+                            <th className="px-4 py-3 font-semibold">Código</th>
                             <th className="px-4 py-3 font-semibold">Nome</th>
                             <th className="px-4 py-3 font-semibold">CPF</th>
                             <th className="px-4 py-3 font-semibold">Email</th>
