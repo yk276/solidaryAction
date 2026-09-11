@@ -1,13 +1,32 @@
 'use client'
 
+import axios from "axios";
 import { useRouter } from "next/navigation";
+import { LoginResponse } from "../types/auth";
 
 
 export default function Login(){
     const router = useRouter();
 
     const handleLogin = async(formData:FormData) => {
-        router.push("/home")
+        try{
+        debugger;
+        const emailTela = formData.get("email")?.toString() ?? "";
+        const senhaTela = formData.get("senha")?.toString() ?? "";
+
+        var loginResposta = await axios.post<LoginResponse>("http://localhost:8080/auth/login",
+        {email:emailTela,senha:senhaTela});
+
+        if(loginResposta.status==200){
+            router.push("/home")
+        }else{
+            alert("Login ou senha inválido!")
+        }
+    }catch (error){
+        alert("Login ou senha inválido!")
+    }
+        
+
     }
 
     return(
@@ -25,7 +44,7 @@ export default function Login(){
                         E-Mail
                     </label>
                     <input
-                        name="email"
+                        name="email" type="email"
                         className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                    </div>
@@ -34,7 +53,7 @@ export default function Login(){
                         Senha
                     </label>
                     <input
-                        name="senha"
+                        name="senha" type="password"
                         className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                    </div>
