@@ -1,6 +1,30 @@
+'use client'
+
 import Link from "next/link";
 
+import { Doador } from "@/app/types/doador";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 export default function Doadores(){
+
+    const [doadores,setDoadores] = useState<Doador[]>([]);
+    
+        useEffect(()=>{
+            carregarDados();
+        })
+
+        const carregarDados = async () => {
+        try{
+            const dados = await axios.get<Doador[]>("http://localhost:8080/doadores");
+
+            setDoadores(dados.data);
+        } catch (error) {
+            alert("Erro ao carregar dados!")
+        }
+        
+
+    }
     
     return (
     
@@ -8,7 +32,7 @@ export default function Doadores(){
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de doadores</h1>
-            <Link href="/doadores/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"></Link>
+            <Link href="/doadores/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Novo</Link>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -21,22 +45,40 @@ export default function Doadores(){
                             <th className="px-4 py-3 font-semibold">CPF</th>
                             <th className="px-4 py-3 font-semibold">Email</th>
                             <th className="px-4 py-3 font-semibold">Profissão</th>
-                            <th className="px-4 py-3 font-semibold">Endereço</th>
                             <th className="px-4 py-3 font-semibold">Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
-                            <td className="px-4 py-3">1</td>
-                            <td className="px-4 py-3 font-medium text-gray-900">Maria Oliveira</td>
-                            <td className="px-4 py-3">123.456.789-00</td>
-                            <td className="px-4 py-3">maria.oliveira@email.com</td>
-                            <td className="px-4 py-3">Professora</td>
-                            <td className="px-4 py-3 text-gray-600">Av. Paulista, 1000 - São Paulo/SP</td>
-                            <td className="px-4 py-3">
-                                <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Ativo</span>
-                            </td>
-                        </tr>
+                        {doadores.map((doador)=> (
+                            <tr key={doador.id} className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
+                                <td className="px-4 py-3 font-medium text-gray-900">
+                                    {doador.id}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doador.nome}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doador.cpf}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doador.email}
+                                </td>
+                                 <td className="px-4 py-3">
+                                    {doador.profissao}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doador.status}
+                                </td>
+                            </tr>
+                            ))}
+
+                                {doadores.length ===0 &&(
+                                    <tr>
+                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                            Nenhum doador encontrado
+                                        </td>
+                                    </tr>
+                                )}
                     </tbody>
                 </table>
             </div>

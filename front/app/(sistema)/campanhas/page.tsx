@@ -1,7 +1,30 @@
+'use client'
+
+import { Campanha } from "@/app/types/campanha";
+import axios from "axios";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Campanhas(){
     
+    const [campanhas,setCampanhas] = useState<Campanha[]>([]);
+
+    useEffect(()=>{
+        carregarDados();
+    })
+
+    const carregarDados = async () => {
+        try{
+            const dados = await axios.get<Campanha[]>("http://localhost:8080/campanhas");
+
+            setCampanhas(dados.data);
+        } catch (error) {
+            alert("Erro ao carregar dados!")
+        }
+        
+
+    }
+
     return (
 
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
@@ -16,7 +39,7 @@ export default function Campanhas(){
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="bg-purple-100 text-purple-800">
-                            <th className="px-4 py-3 font-semibold">Id</th>
+                            <th className="px-4 py-3 font-semibold">Código</th>
                             <th className="px-4 py-3 font-semibold">Título</th>
                             <th className="px-4 py-3 font-semibold">Descrição</th>
                             <th className="px-4 py-3 font-semibold">Meta Financeira</th>
@@ -27,18 +50,42 @@ export default function Campanhas(){
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
-                            <td className="px-4 py-3">1</td>
-                            <td className="px-4 py-3 font-medium text-gray-900">Campanha de Cestas Básicas</td>
-                            <td className="px-4 py-3 text-gray-600">Arrecadação de fundos para distribuição de cestas básicas a famílias em situação de vulnerabilidade.</td>
-                            <td className="px-4 py-3">R$ 10.000,00</td>
-                            <td className="px-4 py-3">R$ 6.450,00</td>
-                            <td className="px-4 py-3">01/03/2026</td>
-                            <td className="px-4 py-3">30/06/2026</td>
-                            <td className="px-4 py-3">
-                                <span className="inline-block rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-600">Encerrada</span>
-                            </td>
-                        </tr>
+                        {campanhas.map((campanha)=> (
+                            <tr key={campanha.id} className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
+                                <td className="px-4 py-3 font-medium text-gray-900">
+                                    {campanha.id}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.titulo}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.descricao}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.metaFinanceira}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.totalArrecadado}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.dataInicio}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.dataFim}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {campanha.status}
+                                </td>
+                            </tr>
+                            ))}
+
+                                {campanhas.length ===0 &&(
+                                    <tr>
+                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                            Nenhuma campanha encontrada
+                                        </td>
+                                    </tr>
+                                )}
                     </tbody>
                 </table>
             </div>

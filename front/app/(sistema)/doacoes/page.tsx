@@ -1,6 +1,30 @@
+'use client'
+
 import Link from "next/link";
 
+import { Doacao } from "@/app/types/doacao";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 export default function Doacoes(){
+
+    const [doacoes,setDoacoes] = useState<Doacao[]>([]);
+
+    useEffect(()=>{
+        carregarDados();
+    })
+
+    const carregarDados = async () => {
+        try{
+            const dados = await axios.get<Doacao[]>("http://localhost:8080/doacoes");
+
+            setDoacoes(dados.data);
+        } catch (error) {
+            alert("Erro ao carregar dados!")
+        }
+        
+
+    }
     
     return (
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
@@ -15,7 +39,7 @@ export default function Doacoes(){
                 <table className="w-full text-left text-sm">
                     <thead>
                         <tr className="bg-purple-100 text-purple-800">
-                            <th className="px-4 py-3 font-semibold">Id</th>
+                            <th className="px-4 py-3 font-semibold">Código</th>
                             <th className="px-4 py-3 font-semibold">Data Doação</th>
                             <th className="px-4 py-3 font-semibold">Valor Doado</th>
                             <th className="px-4 py-3 font-semibold">Descrição</th>
@@ -23,15 +47,33 @@ export default function Doacoes(){
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
-                            <td className="px-4 py-3">1</td>
-                            <td className="px-4 py-3">10/03/2026</td>
-                            <td className="px-4 py-3">R$ 2.000,00</td>
-                            <td className="px-4 py-3 text-gray-600">Doação anônima via PIX</td>
-                            <td className="px-4 py-3">
-                                <span className="inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Concluída</span>
-                            </td>
-                        </tr>
+                        {doacoes.map((doacao)=> (
+                            <tr key={doacao.id} className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
+                                <td className="px-4 py-3 font-medium text-gray-900">
+                                    {doacao.id}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doacao.dataDoacao}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doacao.valorDoado}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doacao.descricao}
+                                </td>
+                                <td className="px-4 py-3">
+                                    {doacao.status}
+                                </td>
+                            </tr>
+                            ))}
+
+                                {doacoes.length ===0 &&(
+                                    <tr>
+                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                            Nenhuma doacão encontrada
+                                        </td>
+                                    </tr>
+                                )}
                     </tbody>
                 </table>
             </div>
