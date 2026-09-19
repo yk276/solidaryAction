@@ -11,7 +11,7 @@ export default function Ongs(){
 
     useEffect(()=>{
         carregarDados();
-    })
+    },[])
 
     const carregarDados = async () => {
         try{
@@ -77,7 +77,7 @@ export default function Ongs(){
 
                                 {ongs.length ===0 &&(
                                     <tr>
-                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                        <td colSpan={7} className= "px-6 py-12 text-center text-purple-800">
                                             Nenhuma ong encontrada
                                         </td>
                                     </tr>

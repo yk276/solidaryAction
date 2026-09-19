@@ -12,7 +12,7 @@ export default function Doacoes(){
 
     useEffect(()=>{
         carregarDados();
-    })
+    },[])
 
     const carregarDados = async () => {
         try{
@@ -27,11 +27,11 @@ export default function Doacoes(){
     }
     
     return (
-        <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
+        <div className=" bg-purple-50 px-4 py-8 md:px-8">
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de doações</h1>
-            <Link href="/docacoes/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"></Link>
+            <Link href="/docacoes/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Novo</Link>
         </div>
 
         <div className="max-w-6xl mx-auto">

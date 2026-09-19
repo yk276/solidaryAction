@@ -12,7 +12,7 @@ export default function Doadores(){
     
         useEffect(()=>{
             carregarDados();
-        })
+        },[])
 
         const carregarDados = async () => {
         try{
@@ -28,7 +28,7 @@ export default function Doadores(){
     
     return (
     
-    <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
+    <div className=" bg-purple-50 px-4 py-8 md:px-8">
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de doadores</h1>
@@ -74,7 +74,7 @@ export default function Doadores(){
 
                                 {doadores.length ===0 &&(
                                     <tr>
-                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                        <td colSpan={6} className= "px-6 py-12 text-center text-purple-800">
                                             Nenhum doador encontrado
                                         </td>
                                     </tr>

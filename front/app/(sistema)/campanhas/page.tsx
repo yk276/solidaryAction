@@ -11,7 +11,7 @@ export default function Campanhas(){
 
     useEffect(()=>{
         carregarDados();
-    })
+    },[]);
 
     const carregarDados = async () => {
         try{
@@ -27,11 +27,11 @@ export default function Campanhas(){
 
     return (
 
-        <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
+        <div className="bg-purple-50 px-4 py-8 md:px-8">
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de campanhas</h1>
-            <Link href="/campanhas/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"></Link>
+            <Link href="/campanhas/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Novo</Link>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -47,6 +47,7 @@ export default function Campanhas(){
                             <th className="px-4 py-3 font-semibold">Data Início</th>
                             <th className="px-4 py-3 font-semibold">Data Fim</th>
                             <th className="px-4 py-3 font-semibold">Status</th>
+                            <th className="px-4 py-3 font-semibold">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,12 +77,15 @@ export default function Campanhas(){
                                 <td className="px-4 py-3">
                                     {campanha.status}
                                 </td>
+                                <td className="px-4 py-3">
+                                    <Link href={`/campanhas/${campanha.id}/editar`}>Editar</Link>
+                                </td>
                             </tr>
                             ))}
 
                                 {campanhas.length ===0 &&(
                                     <tr>
-                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
+                                        <td colSpan={8} className= "px-6 py-12 text-center text-purple-800">
                                             Nenhuma campanha encontrada
                                         </td>
                                     </tr>

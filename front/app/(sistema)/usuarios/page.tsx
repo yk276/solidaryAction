@@ -12,7 +12,7 @@ export default function Usuarios(){
 
     useEffect(()=>{
         carregarDados();
-    })
+    },[])
 
     const carregarDados = async () => {
         try{
@@ -28,7 +28,7 @@ export default function Usuarios(){
     
     return (
     
-        <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
+        <div className="bg-purple-50 px-4 py-8 md:px-8">
     
             <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de usuários</h1>
@@ -45,6 +45,7 @@ export default function Usuarios(){
                                 <th className="px-4 py-3 font-semibold">CPF</th>
                                 <th className="px-4 py-3 font-semibold">Email</th>
                                 <th className="px-4 py-3 font-semibold">Status</th>
+                                <th className="px-4 py-3 font-semibold">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,6 +65,9 @@ export default function Usuarios(){
                                 </td>
                                 <td className="px-4 py-3">
                                     {usuario.status}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <Link href={`/usuarios/${usuario.id}/editar`}>Editar</Link>
                                 </td>
                             </tr>
                             ))}
