@@ -122,7 +122,7 @@ export default function Home() {
             </div>
             
             <div className="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center mx-auto text-xl shadow-md">
+              <div className="w-12 h-12 rounded-xl bg-green-500 text-white font-bold flex items-center justify-center mx-auto text-xl shadow-md">
                 02
               </div>
               <h4 className="font-bold text-slate-800 text-lg">Gestão para ONGs</h4>
@@ -130,7 +130,7 @@ export default function Home() {
             </div>
 
             <div className="p-6 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-green-400 text-white font-bold flex items-center justify-center mx-auto text-xl shadow-md">
+              <div className="w-12 h-12 rounded-xl bg-purple-600 text-white font-bold flex items-center justify-center mx-auto text-xl shadow-md">
                 03
               </div>
               <h4 className="font-bold text-slate-800 text-lg">Segurança Total</h4>

@@ -31,7 +31,7 @@ export default function Campanhas(){
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de campanhas</h1>
-            <Link href="/campanhas/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Novo</Link>
+            <Link href="/campanhas/novo" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Novo</Link>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -78,7 +78,9 @@ export default function Campanhas(){
                                     {campanha.status}
                                 </td>
                                 <td className="px-4 py-3">
+                                    <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                     <Link href={`/campanhas/${campanha.id}/editar`}>Editar</Link>
+                                    </button>
                                 </td>
                             </tr>
                             ))}

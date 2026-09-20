@@ -31,7 +31,7 @@ export default function Ongs(){
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de ongs</h1>
-            <Link href="/ongs/novo" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Novo</Link>
+            <Link href="/ongs/novo" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Novo</Link>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -46,6 +46,7 @@ export default function Ongs(){
                             <th className="px-4 py-3 font-semibold">Email</th>
                             <th className="px-4 py-3 font-semibold">Total Arrecadado</th>
                             <th className="px-4 py-3 font-semibold">Status</th>
+                            <th className="px-4 py-3 font-semibold">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,6 +72,11 @@ export default function Ongs(){
                                 </td>
                                 <td className="px-4 py-3">
                                     {ong.status}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
+                                    <Link href={`/ongs/${ong.id}/editar`}>Editar</Link>
+                                    </button>
                                 </td>
                             </tr>
                             ))}

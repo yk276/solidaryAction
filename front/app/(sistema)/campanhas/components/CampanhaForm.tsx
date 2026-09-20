@@ -10,7 +10,7 @@ export default function CampanhaForm(){
                     <label className="text-sm font-medium text-gray-700">
                         Título:
                     </label>
-                    <input name="título" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                    <input name="titulo" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
@@ -51,7 +51,7 @@ export default function CampanhaForm(){
 
                 <div className="flex items-center justify-end gap-3 mt-2">
                     <Link href="/campanhas" className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100">Cancelar</Link>
-                    <button type="submit" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Salvar</button>
+                    <button type="submit" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Salvar</button>
                 </div>
             </div>
         </form>

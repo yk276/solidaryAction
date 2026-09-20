@@ -30,7 +30,7 @@ export default function DoacaoForm(){
 
                 <div className="flex items-center justify-end gap-3 mt-2">
                     <Link href="/doacoes" className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100">Cancelar</Link>
-                    <button type="submit" className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">Salvar</button>
+                    <button type="submit" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Salvar</button>
                 </div>
             </div>
         </form>

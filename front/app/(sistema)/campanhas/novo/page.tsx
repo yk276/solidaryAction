@@ -7,9 +7,12 @@ export default function CadastroCampanha(){
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">
                 <div className="mb-6">
-                    <Link href="/campanhas" className="inline-block text-sm font-medium text-purple-600 hover:text-purple-800 mb-4">
+                    <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700 mb-4">
+                    <Link href="/campanhas" className="inline-block text-sm font-medium">
                         &larr; Voltar para Listagem
                     </Link>
+                    </button>
+                    
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Nova Campanha</h1>
                         <p className="text-sm text-gray-500 mt-1">Preencha os dados para registrar uma nova campanha</p>

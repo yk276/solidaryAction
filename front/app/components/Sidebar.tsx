@@ -9,12 +9,12 @@ export default function Sidebar(){
                 SolidaryAction
             </div>
             <nav className="flex flex-col gap-1 p-4">
-                <Link href="/home" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Home</Link>
-                <Link href="/usuarios" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Usuários</Link>
-                <Link href="/ongs" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Ongs</Link>
-                <Link href="/campanhas" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Campanhas</Link>
-                <Link href="/doadores" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Doadores</Link>
-                <Link href="/doacoes" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-purple-50 hover:text-purple-700">Doações</Link>
+                <Link href="/home" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Home</Link>
+                <Link href="/usuarios" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Usuários</Link>
+                <Link href="/ongs" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Ongs</Link>
+                <Link href="/campanhas" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Campanhas</Link>
+                <Link href="/doadores" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Doadores</Link>
+                <Link href="/doacoes" className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700">Doações</Link>
             </nav>
         </aside>);
 }
