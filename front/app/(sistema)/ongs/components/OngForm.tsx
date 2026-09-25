@@ -1,9 +1,36 @@
+import { Ong, OngFormProps } from "@/app/types/ong";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 
-export default function OngForm(){
+export default function OngForm({ongExistente}:OngFormProps){
+
+    //prova - implementar salvar e atualizar da ong
+
+    const router = useRouter();
+
+    const [ ong, setOng] = useState<Ong>(
+        ongExistente || 
+        new Ong(null,"","","","",0,"ATIVO") // estado inicial
+    );
+
+     //atualização do valor
+     const handlerChange = ( campo: 'nome'| 'email'| 'cpf'| 'senha', valor:string) => {
+        setOng(valorAnterior => 
+            new Ong(
+                valorAnterior.id,
+                campo === 'nome' ? valor : valorAnterior.nome,
+                campo === 'email' ? valor : valorAnterior.email,
+                valorAnterior.status,
+                campo === 'cpf' ? valor : valorAnterior.cpf,
+                campo === 'senha' ? valor : valorAnterior.senha,
+            )
+        )
+    }
 
     return(
+        //prova - validar chamada onsubmit e vinculo dos inputs com o usestate
         <form className="max-w-2xl mx-auto bg-white rounded-xl border border-purple-100 shadow-sm p-6 md:p-8">
             <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
@@ -22,28 +49,28 @@ export default function OngForm(){
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        CNPJ
+                        CNPJ:
                     </label>
                     <input name="CNPJ" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Email
+                        Email:
                     </label>
                     <input name="email" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Endereço
+                        Endereço:
                     </label>
                     <input name="endereco" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Total Arrecadado
+                        Total Arrecadado:
                     </label>
                     <input name="totalArrecadado" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>

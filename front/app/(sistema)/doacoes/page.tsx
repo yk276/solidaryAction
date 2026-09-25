@@ -27,7 +27,7 @@ export default function Doacoes(){
     }
     
     return (
-        <div className=" bg-purple-50 px-4 py-8 md:px-8">
+        <div className="bg-purple-50 px-4 py-8 md:px-8">
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de doações</h1>

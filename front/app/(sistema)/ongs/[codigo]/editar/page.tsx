@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import OngForm from "../../components/OngForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Ong } from "@/app/types/ong";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
 
@@ -11,6 +14,32 @@ export default function EditarOng(){
     const parametro = useParams();
     
         const codigo = Number(parametro.codigo);
+
+        //prova - implementar a consulta por id da ong para carregar o formulário
+
+        const [ong, setOng] = useState<Ong|null>(null)
+    const router = useRouter();
+
+    useEffect(()=> {
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async () =>{
+
+        const valorOngBack = await axios.get<Ong>('http://localhost:8080/ongs/'+codigo);
+
+        if(valorOngBack.status==200){
+            setOng(valorOngBack.data)
+        }else {
+            router.push("/ongs")
+        }
+
+    }
+
+    if(!ong) return(<div className="p-8">Carregando Dados...</div>)
+
     return(
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">
@@ -27,7 +56,8 @@ export default function EditarOng(){
                     </div>
                 </div>
                 <div>
-                    <OngForm/>
+                    {/*prova - passar a ong carregada pelo id para o novo formulário */}
+                    <OngForm ongExistente={ong}/>
                 </div>
             </div>
         </div>

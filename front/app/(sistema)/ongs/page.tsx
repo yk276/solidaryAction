@@ -22,12 +22,58 @@ export default function Ongs(){
             alert("Erro ao carregar dados!")
         }
         
+        
 
     }
     
+    //prova - implementar alterar status e deletar
+
+    const handlerDeletarOng = async (ong:Ong) => {
+
+        var dadosRetorno =
+        await axios.delete<number>('http://localhost:8080/ongs/'+ong.id+'/excluir');
+
+       if(dadosRetorno.status==200){
+        alert("Ong foi salva com sucesso!")
+        
+       }else {
+        alert(dadosRetorno.data);
+
+        return;
+       }
+
+       carregarDados();
+
+    }
+
+    const handlerAlterarStatusOng = async(ong:Ong) =>{
+
+
+        var novoStatus = {};
+        if(ong.status ==="ATIVO"){
+            novoStatus = {status:"BLOQUEADO"}
+        }else{
+            novoStatus = {status:"ATIVO"}
+        }
+
+        var dadosRetorno = await  
+        axios.patch('http://localhost:8080/ongs/'+ong.id+'/status',novoStatus);
+
+        if(dadosRetorno.status==200){
+            alert("Atulizado status com sucesso!");
+        }else{
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
+
+    }
+
     return (
 
-        <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
+        <div className="bg-purple-50 px-4 py-8 md:px-8">
 
         <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de ongs</h1>
@@ -74,9 +120,18 @@ export default function Ongs(){
                                     {ong.status}
                                 </td>
                                 <td className="px-4 py-3">
+                                    {/* prova - adicionar botões necessários */}
                                     <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                     <Link href={`/ongs/${ong.id}/editar`}>Editar</Link>
                                     </button>
+                                    <button onClick = {()=> handlerDeletarOng(ong)}
+                                       className= "rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white font-medium transition-colors text-red-600 hover:text-red-800 ">
+                                        DELETAR</button>
+                                        <button onClick = {()=> handlerAlterarStatusOng(ong)}
+                                       className= {`rounded-lg font-medium transition-colors ${ong.status ==='BLOQUEADO'
+                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800' 
+                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:text-green-800' }`
+                                         }>{ong.status}</button>
                                 </td>
                             </tr>
                             ))}

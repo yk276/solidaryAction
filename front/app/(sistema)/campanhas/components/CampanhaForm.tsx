@@ -22,28 +22,28 @@ export default function CampanhaForm(){
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Meta Financeira
+                        Meta Financeira:
                     </label>
                     <input name="metaFinaneira" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Total Arrecadado
+                        Total Arrecadado:
                     </label>
                     <input name="senha" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Data InÍcio
+                        Data InÍcio:
                     </label>
                     <input name="dataInicio" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
                 </div>
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Data Fim
+                        Data Fim:
                     </label>
                     <input name="dataFim" className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
                     </input>
