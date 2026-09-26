@@ -25,6 +25,49 @@ export default function Doadores(){
         
 
     }
+
+    const handlerDeletarDoador = async (doador:Doador) => {
+
+        var dadosRetorno =
+        await axios.delete<number>('http://localhost:8080/doadores/'+doador.id+'/excluir');
+
+       if(dadosRetorno.status==200){
+        alert("Doador foi deletado com sucesso!")
+        
+       }else {
+        alert(dadosRetorno.data);
+
+        return;
+       }
+
+       carregarDados();
+
+    }
+
+    const handlerAlterarStatusDoador = async(doador:Doador) =>{
+
+
+        var novoStatus = {};
+        if(doador.status ==="ATIVO"){
+            novoStatus = {status:"BLOQUEADO"}
+        }else{
+            novoStatus = {status:"ATIVO"}
+        }
+
+        var dadosRetorno = await  
+        axios.patch('http://localhost:8080/doadores/'+doador.id+'/status',novoStatus);
+
+        if(dadosRetorno.status==200){
+            alert("Atulizado status com sucesso!");
+        }else{
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
+
+    }
     
     return (
     
@@ -70,10 +113,18 @@ export default function Doadores(){
                                 <td className="px-4 py-3">
                                     {doador.status}
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 flex gap-4">
                                     <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                     <Link href={`/doadores/${doador.id}/editar`}>Editar</Link>
                                     </button>
+                                    <button onClick = {()=> handlerDeletarDoador(doador)}
+                                       className= "rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white font-medium transition-colors text-red-600 hover:text-red-800 ">
+                                        DELETAR</button>
+                                        <button onClick = {()=> handlerAlterarStatusDoador(doador)}
+                                       className= {`rounded-lg font-medium transition-colors ${doador.status ==='BLOQUEADO'
+                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800' 
+                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:text-green-800' }`
+                                         }>{doador.status}</button>
                                 </td>
                             </tr>
                             ))}

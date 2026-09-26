@@ -21,7 +21,7 @@ public class Doacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    public LocalDateTime dataDoacao;
+    public String dataDoacao;
 
     public BigDecimal valorDoado;
 

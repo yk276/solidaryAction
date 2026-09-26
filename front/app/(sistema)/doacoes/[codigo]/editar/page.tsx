@@ -1,7 +1,10 @@
 'use client'
 
+import { Doacao } from "@/app/types/doacao";
+import axios from "axios";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import DoacaoForm from "../../components/DoacaoForm";
 
 
@@ -10,6 +13,30 @@ export default function EditarDoacao(){
     const parametro = useParams();
 
     const codigo = Number(parametro.codigo);
+
+    const [doacao, setDoacao] = useState<Doacao|null>(null)
+    const router = useRouter();
+
+    useEffect(()=> {
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async () =>{
+
+        const valorDoacaoBack = await axios.get<Doacao>('http://localhost:8080/doacoes/'+codigo);
+
+        if(valorDoacaoBack.status==200){
+            setDoacao(valorDoacaoBack.data)
+        }else {
+            router.push("/doacoes")
+        }
+
+    }
+
+    if(!doacao) return(<div className="p-8">Carregando Dados...</div>)
+
     return(
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">
@@ -26,7 +53,7 @@ export default function EditarDoacao(){
                     </div>
                 </div>
                 <div>
-                    <DoacaoForm/>
+                    <DoacaoForm doacaoExistente={doacao}/>
                 </div>
             </div>
         </div>

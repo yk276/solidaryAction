@@ -1,7 +1,6 @@
 'use client'
 
 import Link from "next/link";
-
 import { Doacao } from "@/app/types/doacao";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -23,6 +22,49 @@ export default function Doacoes(){
             alert("Erro ao carregar dados!")
         }
         
+
+    }
+
+    const handlerDeletarDoacao = async (doacao:Doacao) => {
+
+        var dadosRetorno =
+        await axios.delete<number>('http://localhost:8080/doacoes/'+doacao.id+'/excluir');
+
+       if(dadosRetorno.status==200){
+        alert("Doacão foi deletada com sucesso!")
+        
+       }else {
+        alert(dadosRetorno.data);
+
+        return;
+       }
+
+       carregarDados();
+
+    }
+
+    const handlerAlterarStatusDoacao = async(doacao:Doacao) =>{
+
+
+        var novoStatus = {};
+        if(doacao.status ==="PENDENTE"){
+            novoStatus = {status:"BLOQUEADO"}
+        }else{
+            novoStatus = {status:"PENDENTE"}
+        }
+
+        var dadosRetorno = await  
+        axios.patch('http://localhost:8080/doacoes/'+doacao.id+'/status',novoStatus);
+
+        if(dadosRetorno.status==200){
+            alert("Atulizado status com sucesso!");
+        }else{
+            alert(dadosRetorno.data);
+
+            return;
+        }
+
+        carregarDados();
 
     }
     
@@ -65,10 +107,18 @@ export default function Doacoes(){
                                 <td className="px-4 py-3">
                                     {doacao.status}
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 flex gap-4">
                                     <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                     <Link href={`/doacoes/${doacao.id}/editar`}>Editar</Link>
                                     </button>
+                                    <button onClick = {()=> handlerDeletarDoacao(doacao)}
+                                       className= "rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white font-medium transition-colors text-red-600 hover:text-red-800 ">
+                                        DELETAR</button>
+                                        <button onClick = {()=> handlerAlterarStatusDoacao(doacao)}
+                                       className= {`rounded-lg font-medium transition-colors ${doacao.status ==='BLOQUEADO'
+                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800' 
+                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:text-green-800' }`
+                                         }>{doacao.status}</button>
                                 </td>
                             </tr>
                             ))}

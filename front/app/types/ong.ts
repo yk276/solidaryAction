@@ -1,10 +1,11 @@
 export class Ong{
     constructor(
         public id: number | null,
-        public nome:string,
+        public nomeFantasia:string,
         public razaoSocial:string,
         public email:string,
         public cnpj:string,
+        public endereco:string,
         public totalArrecadado:number, // no form é 0 
         public status:string,
     ){}

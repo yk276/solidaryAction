@@ -32,7 +32,7 @@ export default function Usuarios(){
         await axios.delete<number>('http://localhost:8080/usuarios/'+usuario.id+'/excluir');
 
        if(dadosRetorno.status==200){
-        alert("Usuário foi salvo com sucesso!")
+        alert("Usuário foi deletado com sucesso!")
         
        }else {
         alert(dadosRetorno.data);

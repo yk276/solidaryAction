@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import DoadorForm from "../../components/DoadorForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Doador } from "@/app/types/doador";
+import axios from "axios";
 
 
 export default function EditarDoador(){
@@ -10,6 +13,29 @@ export default function EditarDoador(){
     const parametro = useParams();
     
         const codigo = Number(parametro.codigo);
+
+        const [doador, setDoador] = useState<Doador|null>(null)
+    const router = useRouter();
+
+    useEffect(()=> {
+
+        buscarDados();
+
+    },[])
+
+    const buscarDados = async () =>{
+
+        const valorDoadorBack = await axios.get<Doador>('http://localhost:8080/doadores/'+codigo);
+
+        if(valorDoadorBack.status==200){
+            setDoador(valorDoadorBack.data)
+        }else {
+            router.push("/doadores")
+        }
+
+    }
+
+    if(!doador) return(<div className="p-8">Carregando Dados...</div>)
     return(
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">
@@ -26,7 +52,7 @@ export default function EditarDoador(){
                     </div>
                 </div>
                 <div>
-                    <DoadorForm/>
+                    <DoadorForm doadorExistente={doador}/>
                 </div>
             </div>
         </div>

@@ -10,3 +10,6 @@ export class Campanha{
         public status:string
     ){}
 }
+export interface CampanhaFormProps{
+    campanhaExistente?:Campanha
+}

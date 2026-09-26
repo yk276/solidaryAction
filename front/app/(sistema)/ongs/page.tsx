@@ -34,7 +34,7 @@ export default function Ongs(){
         await axios.delete<number>('http://localhost:8080/ongs/'+ong.id+'/excluir');
 
        if(dadosRetorno.status==200){
-        alert("Ong foi salva com sucesso!")
+        alert("Ong foi deletada com sucesso!")
         
        }else {
         alert(dadosRetorno.data);
@@ -102,7 +102,7 @@ export default function Ongs(){
                                     {ong.id}
                                 </td>
                                 <td className="px-4 py-3">
-                                    {ong.nome}
+                                    {ong.nomeFantasia}
                                 </td>
                                 <td className="px-4 py-3">
                                     {ong.razaoSocial}
@@ -119,7 +119,7 @@ export default function Ongs(){
                                 <td className="px-4 py-3">
                                     {ong.status}
                                 </td>
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 flex gap-4">
                                     {/* prova - adicionar botões necessários */}
                                     <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                     <Link href={`/ongs/${ong.id}/editar`}>Editar</Link>

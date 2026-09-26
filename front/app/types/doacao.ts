@@ -7,3 +7,6 @@ export class Doacao{
         public status:string
     ){}
 }
+export interface DoacaoFormProps{
+    doacaoExistente?:Doacao
+}
