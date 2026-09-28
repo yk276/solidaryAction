@@ -3,6 +3,9 @@ import UsuarioForm from "../components/UsuarioForm";
 
 export default function CadastroUsuario(){
 
+//Página de cadastro de usuário. Monta o cabeçalho da tela e reutiliza o mesmo componente de
+//formulário, mas sem fornecer um registro existente; isso faz o formulário entrar no modo de criação.
+
     return(
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">
@@ -19,6 +22,8 @@ export default function CadastroUsuario(){
                     </div>
                 </div>
                 <div>
+                    {/* A página de cadastro reaproveita o mesmo componente de formulário sem enviar um registro existente; isso faz o */}
+                    {/* formulário operar em modo de criação. */}
                     <UsuarioForm/>
                 </div>
             </div>

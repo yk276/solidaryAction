@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+//Formulário reutilizável de ONG. Centraliza o estado dos campos, alterações feitas pelo usuário
+//e a decisão entre criar um novo registro com POST ou atualizar um existente com PUT.
 
 export default function OngForm({ongExistente}:OngFormProps){
 
@@ -13,12 +15,15 @@ export default function OngForm({ongExistente}:OngFormProps){
 
     const router = useRouter();
 
+    // O estado do formulário começa com a ong existente quando é edição; se não houver registro, cria um objeto vazio
+    //para cadastro.
     const [ ong, setOng] = useState<Ong>(
         ongExistente || 
         new Ong(null,"","","","","",0,"ATIVO") // estado inicial
     );
 
-     //atualização do valor
+     // Centraliza a atualização dos campos do formulário. Cada alteração recria o objeto preservando os demais valores
+    //já digitados.
      const handlerChange = ( campo: 'nomeFantasia'| 'razaoSocial'| 'email'| 'cnpj'| 'endereco'| 'totalArrecadado', valor:string) => {
         setOng(valorAnterior => 
             new Ong(
@@ -34,6 +39,8 @@ export default function OngForm({ongExistente}:OngFormProps){
         )
     }
 
+    // No envio do formulário, a mesma função decide entre PUT (editar um registro existente) e POST (criar um novo
+    //registro) e, ao final, volta para a listagem.
     const handlerSalvar = async (formData: FormData) => {
 
     

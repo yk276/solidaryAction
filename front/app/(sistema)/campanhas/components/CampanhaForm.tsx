@@ -6,16 +6,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+//Formulário reutilizável de campanha. Centraliza o estado dos campos, alterações feitas pelo
+// usuário e a decisão entre criar um novo registro com POST ou atualizar um existente com PUT.
 
 export default function CampanhaForm({campanhaExistente}:CampanhaFormProps){
 
     const router = useRouter();
 
+    // O estado do formulário começa com a campanha existente quando é edição; se não houver registro, cria um objeto
+    // vazio para cadastro.
     const [ campanha, setCampanha] = useState<Campanha>(
         campanhaExistente || 
         new Campanha(null,"","",0,0,"","","ATIVO") // estado inicial
     );
 
+    // Centraliza a atualização dos campos do formulário. Cada alteração recria o objeto preservando os demais valores
+    // já digitados.
     const handlerChange = ( campo: 'titulo'| 'descricao'| 'metaFinanceira'| 'totalArrecadado' | 'dataInicio' | 'dataFim', valor:string) => {
         setCampanha(valorAnterior => 
             new Campanha(
@@ -32,6 +38,8 @@ export default function CampanhaForm({campanhaExistente}:CampanhaFormProps){
         )
     }
 
+    // No envio do formulário, a mesma função decide entre PUT (editar um registro existente) e POST (criar um novo
+    // registro) e, ao final, volta para a listagem.
     const handlerSalvar = async (formData: FormData) => {
 
     
@@ -94,6 +102,7 @@ export default function CampanhaForm({campanhaExistente}:CampanhaFormProps){
                         Meta Financeira:
                     </label>
                     <input
+                    type="text"
                     name="metaFinaneira"
                     value={campanha.metaFinanceira}
                     required

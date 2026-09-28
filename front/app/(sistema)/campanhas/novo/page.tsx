@@ -1,6 +1,9 @@
 import Link from "next/link";
 import CampanhaForm from "../components/CampanhaForm";
 
+//Página de cadastro de campanha. Monta o cabeçalho da tela e reutiliza o mesmo componente de
+// formulário, mas sem fornecer um registro existente; isso faz o formulário entrar no modo de criação.
+
 export default function CadastroCampanha(){
 
     return(

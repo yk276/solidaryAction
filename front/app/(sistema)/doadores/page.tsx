@@ -6,6 +6,9 @@ import { Doador } from "@/app/types/doador";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+//Tela de listagem e gestão de doadores. Busca os registros no backend, guarda a lista no estado
+//React e oferece ações de editar, excluir logicamente e alterar status.
+
 export default function Doadores(){
 
     const [doadores,setDoadores] = useState<Doador[]>([]);
@@ -14,6 +17,7 @@ export default function Doadores(){
             carregarDados();
         },[])
 
+        //carregarDados faz o GET da coleção no backend e salva o resultado no estado usado pela tabela.
         const carregarDados = async () => {
         try{
             const dados = await axios.get<Doador[]>("http://localhost:8080/doadores");
@@ -44,6 +48,7 @@ export default function Doadores(){
 
     }
 
+    //A alteração de status monta o novo valor, envia um PATCH e recarrega os dados para refletir a mudança na tela
     const handlerAlterarStatusDoador = async(doador:Doador) =>{
 
 
@@ -69,6 +74,8 @@ export default function Doadores(){
 
     }
     
+    // O retorno JSX monta a tabela. O map percorre o array do estado e cria uma linha para cada registro, com ações de
+    //editar, excluir e alterar status.
     return (
     
     <div className="bg-purple-50 px-4 py-8 md:px-8">

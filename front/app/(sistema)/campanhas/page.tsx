@@ -5,16 +5,25 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+//Tela de listagem e gestão de campanhas. Busca os registros no backend, guarda a lista no
+// estado React e oferece ações de editar, excluir logicamente e alterar status.
+
 export default function Campanhas(){
     
     const [campanhas,setCampanhas] = useState<Campanha[]>([]);
 
-    useEffect(()=>{
+    //O useEffect é executado após a montagem do componente. Dentro dele, carregarDados() é
+    //chamado para iniciar a consulta das campanhas. Como o array de dependências está vazio, esse
+    //carregamento inicial ocorre uma vez quando a página é aberta.
+    useEffect(()=>{ 
         carregarDados();
     },[]);
 
+    //faz o GET da coleção no backend e salva o resultado no estado usado pela tabela.
     const carregarDados = async () => {
         try{
+            //O Axios envia uma requisição HTTP GET para /campanhas. A execução fica aguardando a
+            //resposta do backend porque a chamada utiliza await.
             const dados = await axios.get<Campanha[]>("http://localhost:8080/campanhas");
 
             setCampanhas(dados.data);
@@ -43,6 +52,7 @@ export default function Campanhas(){
 
     }
 
+    // A alteração de status monta o novo valor, envia um PATCH e recarrega os dados para refletir a mudança na tela.
     const handlerAlterarStatusCampanha = async(campanha:Campanha) =>{
 
 
@@ -69,6 +79,8 @@ export default function Campanhas(){
     }
 
 
+    // O retorno JSX monta a tabela. O map percorre o array do estado e cria uma linha para cada registro, com ações de
+    // editar, excluir e alterar status.
     return (
 
         <div className="bg-purple-50 px-4 py-8 md:px-8">

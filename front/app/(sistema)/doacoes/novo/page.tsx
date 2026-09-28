@@ -3,6 +3,9 @@
 import Link from "next/link";
 import DoacaoForm from "../components/DoacaoForm";
 
+//Página de cadastro de doação. Monta o cabeçalho da tela e reutiliza o mesmo componente de
+//formulário, mas sem fornecer um registro existente; isso faz o formulário entrar no modo de criação.
+
 export default function CadastroDoacao(){
 
     return(
@@ -21,6 +24,8 @@ export default function CadastroDoacao(){
                     </div>
                 </div>
                 <div>
+                    {/* A página de cadastro reaproveita o mesmo componente de formulário sem enviar um registro existente; isso faz o */}
+                    {/* formulário operar em modo de criação. */}
                     <DoacaoForm/>
                 </div>
             </div>

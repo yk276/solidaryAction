@@ -5,6 +5,9 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+//Tela de listagem e gestão de ONGs. Busca os registros no backend, guarda a lista no estado
+//React e oferece ações de editar, excluir logicamente e alterar status.
+
 export default function Ongs(){
 
     const [ongs,setOngs] = useState<Ong[]>([]);
@@ -13,6 +16,7 @@ export default function Ongs(){
         carregarDados();
     },[])
 
+    //carregarDados faz o GET da coleção no backend e salva o resultado no estado usado pela tabela.
     const carregarDados = async () => {
         try{
             const dados = await axios.get<Ong[]>("http://localhost:8080/ongs");
@@ -46,6 +50,7 @@ export default function Ongs(){
 
     }
 
+    //A alteração de status monta o novo valor, envia um PATCH e recarrega os dados para refletir a mudança na tela.
     const handlerAlterarStatusOng = async(ong:Ong) =>{
 
 
@@ -71,6 +76,8 @@ export default function Ongs(){
 
     }
 
+    // O retorno JSX monta a tabela. O map percorre o array do estado e cria uma linha para cada registro, com ações de
+    //editar, excluir e alterar status.
     return (
 
         <div className="bg-purple-50 px-4 py-8 md:px-8">

@@ -1,5 +1,8 @@
 package com.example.solidaryaction.services;
 
+//Serviço responsável por criar e validar tokens JWT. Centraliza algoritmo, emissor, segredo e
+//tempo de expiração configurados no `application.properties
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -24,6 +27,8 @@ public class TokenService {
     @Value("${spring.emissor}")
     private String emissor;
 
+    //Gera um JWT contendo as informações definidas pelo sistema, assina o token com a chave secreta e define sua
+    //validade.
     public String gerarToken(String subject){
 
         try{

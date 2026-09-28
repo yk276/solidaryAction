@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { Doador } from "@/app/types/doador";
 import axios from "axios";
 
+//Página de edição de doador. Lê o código da rota dinâmica, busca o registro correspondente no
+//backend e só depois entrega os dados ao formulário reutilizável para edição.
 
 export default function EditarDoador(){
 
@@ -23,6 +25,8 @@ export default function EditarDoador(){
 
     },[])
 
+    // Esta função consulta o backend pelo código da URL. Se encontrar o registro, grava os dados no estado; caso
+    //contrário, redireciona o usuário.
     const buscarDados = async () =>{
 
         const valorDoadorBack = await axios.get<Doador>('http://localhost:8080/doadores/'+codigo);
@@ -36,6 +40,9 @@ export default function EditarDoador(){
     }
 
     if(!doador) return(<div className="p-8">Carregando Dados...</div>)
+
+    {/* Depois que os dados chegam, a tela renderiza o formulário reutilizável em modo de edição, passando o objeto */}
+    {/* existente como propriedade. */} 
     return(
         <div className="min-h-screen bg-purple-50 px-4 py-8 md:px-8">
             <div className="max-w-2xl mx-auto">

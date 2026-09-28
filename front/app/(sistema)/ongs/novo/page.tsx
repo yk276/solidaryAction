@@ -3,6 +3,8 @@
 import Link from "next/link";
 import OngForm from "../components/OngForm";
 
+//Página de cadastro de ONG. Monta o cabeçalho da tela e reutiliza o mesmo componente de
+//formulário, mas sem fornecer um registro existente; isso faz o formulário entrar no modo de criação.
 
 export default function CadastroOng(){
 
@@ -22,6 +24,8 @@ export default function CadastroOng(){
                     </div>
                 </div>
                 <div>
+                    {/* A página de cadastro reaproveita o mesmo componente de formulário sem enviar um registro existente; isso faz o */}
+                    {/* formulário operar em modo de criação. */}
                     <OngForm/>
                 </div>
             </div>

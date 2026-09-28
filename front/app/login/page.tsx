@@ -4,20 +4,26 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "../types/auth";
 
+//Tela de login. Lê e-mail e senha do formulário, envia as credenciais ao endpoint de
+//autenticação e navega para a área interna quando o backend responde com sucesso.
 
 export default function Login(){
     const router = useRouter();
 
+    //handleLogin lê email e senha enviados pelo formulário, chama o endpoint de autenticação e trata sucesso ou erro.
     const handleLogin = async(formData:FormData) => {
         try{
         debugger;
         const emailTela = formData.get("email")?.toString() ?? "";
         const senhaTela = formData.get("senha")?.toString() ?? "";
 
+        // O Axios envia as credenciais ao Spring Boot. A tipagem LoginResponse informa ao TypeScript qual formato de
+        //resposta é esperado.
         var loginResposta = await axios.post<LoginResponse>("http://localhost:8080/auth/login",
         {email:emailTela,senha:senhaTela});
 
         if(loginResposta.status==200){
+            //Quando o login retorna sucesso, o router do Next.js navega para a área interna sem recarregar toda a aplicação.
             router.push("/home")
         }else{
             alert("Login ou senha inválido!")
@@ -37,6 +43,8 @@ export default function Login(){
                         Entrar no sistema
                     </h1>
                 </div>
+                {/* O formulário usa a Server Action-style prop action para entregar os dados diretamente à função handleLogin no */}
+                {/* cliente. */}
                 <form action={handleLogin} className="flex flex-col gap-4">
 
                    <div className="flex flex-col gap-1">

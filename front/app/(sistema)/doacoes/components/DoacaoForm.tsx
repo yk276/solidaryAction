@@ -6,16 +6,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+//Formulário reutilizável de doação. Centraliza o estado dos campos, alterações feitas pelo
+// usuário e a decisão entre criar um novo registro com POST ou atualizar um existente com PUT.
 
 export default function DoacaoForm({doacaoExistente}:DoacaoFormProps){
 
     const router = useRouter();
 
+    // O estado do formulário começa com a doacao existente quando é edição; se não houver registro, cria um objeto
+    //vazio para cadastro.
     const [ doacao, setDoacao] = useState<Doacao>(
         doacaoExistente || 
         new Doacao(null,"",0,"","PENDENTE") // estado inicial
     );
 
+    // Centraliza a atualização dos campos do formulário. Cada alteração recria o objeto preservando os demais valores
+    //já digitados.
     const handlerChange = ( campo: 'dataDoacao'| 'valorDoado'| 'descricao', valor:string) => {
         setDoacao(valorAnterior => 
             new Doacao(
@@ -28,6 +34,8 @@ export default function DoacaoForm({doacaoExistente}:DoacaoFormProps){
         )
     }
 
+    // No envio do formulário, a mesma função decide entre PUT (editar um registro existente) e POST (criar um novo
+    //registro) e, ao final, volta para a listagem.
     const handlerSalvar = async (formData: FormData) => {
     
         if(doacaoExistente){

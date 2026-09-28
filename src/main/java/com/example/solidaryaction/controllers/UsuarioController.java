@@ -1,5 +1,8 @@
 package com.example.solidaryaction.controllers;
 
+//Controller REST de Usuario. Recebe requisições HTTP, chama o Repository correspondente, monta
+//respostas HTTP e documenta os endpoints para o Swagger.
+
 import com.example.solidaryaction.DTOs.AtualizarStatusRequest;
 import com.example.solidaryaction.DTOs.CadastroRequest;
 import com.example.solidaryaction.entities.EnumStatusUsuario;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//Este controller recebe requisições HTTP desta entidade. @RequestMapping define a rota base e o Swagger usa
+//@Tag/@Operation para documentar os endpoints.
 @RestController
 @RequestMapping("/usuarios")
 @Tag(name = "Usuários", description = "Controller responsável pela gestão de usuários do sistema.")
@@ -22,6 +27,8 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    //Endpoint GET: consulta dados. O método usa o Repository para buscar no banco e devolve a resposta HTTP ao
+    //frontend/Swagger.
     @GetMapping
     @Operation(summary = "Listar usuários", description = "Método responsável por consultar todos os usuários cadastrados.")
     public ResponseEntity<?> listarTodos(){
@@ -30,6 +37,7 @@ public class UsuarioController {
     }
 
 
+    //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar usuário", description = "Método responsável por registrar um novo usuário no sistema.")
@@ -40,6 +48,8 @@ public class UsuarioController {
 
     }
 
+    //Endpoint GET por ID: recebe o identificador pela URL, procura o registro no Repository e retorna 200 quando
+    //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID", description = "Método responsável por consultar um usuário específico pelo seu identificador.")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
@@ -51,6 +61,7 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    //Endpoint PATCH: altera somente o status do registro, sem substituir todos os demais campos.
     @PatchMapping("/{id}/status")
     @Operation(summary = "Atualizar status do usuário", description = "Método responsável por alterar o status do usuário.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
@@ -64,6 +75,7 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar usuário", description = "Método responsável por atualizar os dados do um usuário.")
     public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
@@ -84,6 +96,8 @@ public class UsuarioController {
         }
     }
 
+    //Endpoint de exclusão: localiza o registro e aplica a lógica de exclusão definida pelo projeto antes de salvar a
+    //alteração.
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Excluir usuário", description = "Método responsável por excluir um usuário existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
@@ -98,6 +112,7 @@ public class UsuarioController {
 
     }
 
+    //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/cadastrar")
     @Operation(summary = "Cadastrar usuário", description = "Método responsável por efetuar o cadastro de um novo usuário.")
     public ResponseEntity<Usuario> cadastrar(@RequestBody CadastroRequest cadastroRequest){

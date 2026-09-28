@@ -11,6 +11,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+//Filtro executado uma vez por requisição. Decide quais rotas passam sem token e, nas demais, lê
+//o cabeçalho Authorization e valida o JWT antes de continuar a cadeia de filtros.
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -18,6 +20,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private TokenService tokenService;
 
     @Override
+    //Este filtro intercepta requisições antes de chegarem aos controllers para verificar se existe um token JWT
+    //válido.
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String uri = request.getRequestURI();
@@ -31,10 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
         || uri.startsWith("/cadastrar")
                 || uri.startsWith("/")
         ){
+            //Se a validação permitir, a requisição continua pela cadeia de filtros até chegar ao endpoint solicitado.
             filterChain.doFilter(request,response);
             return;
         }
 
+        //Lê o cabeçalho Authorization, local onde normalmente chega o token no formato Bearer <token>.
         String authHeader = request.getHeader("Authorization");
 
         if(authHeader != null && authHeader.startsWith("Bearer ")){
