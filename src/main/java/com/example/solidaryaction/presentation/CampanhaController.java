@@ -4,6 +4,8 @@ package com.example.solidaryaction.presentation;
 //respostas HTTP e documenta os endpoints para o Swagger.
 
 import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestCampanha;
+import com.example.solidaryaction.application.DTOs.CampanhaResponse;
+import com.example.solidaryaction.application.services.CampanhaService;
 import com.example.solidaryaction.domain.entities.Campanha;
 import com.example.solidaryaction.domain.entities.EnumStatusCampanha;
 import com.example.solidaryaction.domain.repository.CampanhaRepository;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //Este controller recebe requisições HTTP desta entidade. @RequestMapping define a rota base e o Swagger usa
 //@Tag/@Operation para documentar os endpoints.
@@ -24,13 +28,16 @@ public class CampanhaController {
     @Autowired
     private CampanhaRepository campanhaRepository;
 
+    @Autowired
+    private CampanhaService campanhaService;
+
     //Endpoint GET: consulta dados. O método usa o Repository para buscar no banco e devolve a resposta HTTP ao
     //frontend/Swagger.
     @GetMapping
     @Operation(summary = "Listar campanhas", description = "Método responsável por consultar todas as campanhas cadastradas.")
-    public ResponseEntity<?> listarTodos(){
+    public ResponseEntity<List<CampanhaResponse>> listarTodos(){
 
-        return  ResponseEntity.ok(campanhaRepository.findAll());
+        return  ResponseEntity.ok(campanhaService.listarTodasCampanhasTable());
     }
 
 

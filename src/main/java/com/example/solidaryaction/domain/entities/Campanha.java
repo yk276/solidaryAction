@@ -36,9 +36,9 @@ public class Campanha {
 
     public BigDecimal totalArrecadado;
 
-    public LocalDate dataInicio;
+    public String dataInicio;
 
-    public LocalDate dataFim;
+    public String dataFim;
 
     public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
 }

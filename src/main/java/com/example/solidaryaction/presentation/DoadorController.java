@@ -4,6 +4,8 @@ package com.example.solidaryaction.presentation;
 //respostas HTTP e documenta os endpoints para o Swagger.
 
 import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestDoador;
+import com.example.solidaryaction.application.DTOs.DoadorResponse;
+import com.example.solidaryaction.application.services.DoadorService;
 import com.example.solidaryaction.domain.entities.Doador;
 import com.example.solidaryaction.domain.entities.EnumStatusDoador;
 import com.example.solidaryaction.domain.repository.DoadorRepository;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //Este controller recebe requisições HTTP desta entidade. @RequestMapping define a rota base e o Swagger usa
 //@Tag/@Operation para documentar os endpoints.
@@ -24,13 +28,16 @@ public class DoadorController {
     @Autowired
     private DoadorRepository doadorRepository;
 
+    @Autowired
+    private DoadorService doadorService;
+
     //Endpoint GET: consulta dados. O método usa o Repository para buscar no banco e devolve a resposta HTTP ao
     // frontend/Swagger.
     @GetMapping
     @Operation(summary = "Listar doadores", description = "Método responsável por consultar todos os doadores cadastrados.")
-    public ResponseEntity<?> listarTodos(){
+    public ResponseEntity<List<DoadorResponse>> listarTodos(){
 
-        return  ResponseEntity.ok(doadorRepository.findAll());
+        return  ResponseEntity.ok(doadorService.listarTodasDoadoresTable());
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.

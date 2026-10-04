@@ -4,6 +4,8 @@ package com.example.solidaryaction.presentation;
 //respostas HTTP e documenta os endpoints para o Swagger.
 
 import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestOng;
+import com.example.solidaryaction.application.DTOs.OngResponse;
+import com.example.solidaryaction.application.services.OngService;
 import com.example.solidaryaction.domain.entities.EnumStatusOng;
 import com.example.solidaryaction.domain.entities.Ong;
 import com.example.solidaryaction.domain.repository.OngRepository;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //Este controller recebe requisições HTTP desta entidade. @RequestMapping define a rota base e o Swagger usa
 //@Tag/@Operation para documentar os endpoints.
@@ -24,13 +28,16 @@ public class OngController {
     @Autowired
     private OngRepository ongRepository;
 
+    @Autowired
+    private OngService ongService;
+
     // Endpoint GET: consulta dados. O método usa o Repository para buscar no banco e devolve a resposta HTTP ao
     //frontend/Swagger.
     @GetMapping
     @Operation(summary = "Listar ONGs", description = "Método responsável por consultar todas as ONGs cadastradas.")
-    public ResponseEntity<?> listarTodos(){
+    public ResponseEntity<List<OngResponse>> listarTodos(){
 
-        return  ResponseEntity.ok(ongRepository.findAll());
+        return  ResponseEntity.ok(ongService.listarTodasOngsTable());
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
