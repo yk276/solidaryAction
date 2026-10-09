@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.back.MenuController">
+   <children>
+      <Button layoutX="41.0" layoutY="332.0" mnemonicParsing="false" onAction="#sair" text="Sair" />
+      <Button layoutX="51.0" layoutY="49.0" mnemonicParsing="false" text="Cadastro Admin" />
+      <Button layoutX="51.0" layoutY="49.0" mnemonicParsing="false" onAction="#abrirCadastroUsuario" text="Cadastro Usuario" />
+      <Button layoutX="51.0" layoutY="91.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Button" />
+   </children>
+</AnchorPane>
