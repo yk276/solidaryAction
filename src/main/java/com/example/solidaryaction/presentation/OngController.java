@@ -3,8 +3,7 @@ package com.example.solidaryaction.presentation;
 //Controller REST de Ong. Recebe requisições HTTP, chama o Repository correspondente, monta
 //respostas HTTP e documenta os endpoints para o Swagger.
 
-import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestOng;
-import com.example.solidaryaction.application.DTOs.OngResponse;
+import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.OngService;
 import com.example.solidaryaction.domain.entities.EnumStatusOng;
 import com.example.solidaryaction.domain.entities.Ong;
@@ -48,6 +47,19 @@ public class OngController {
 
         var ongBanco = ongRepository.save(ong);
         return ResponseEntity.ok(ongBanco);
+
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<CriarOngAdminResponse> criarOngAdmin(@RequestBody CriarOngAdminRequest criarOngAdminRequest){
+
+        try{
+            CriarOngAdminResponse respostaSalvar = ongService.criarOngAdmin(criarOngAdminRequest);
+            return ResponseEntity.ok(respostaSalvar);
+
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().build();
+        }
 
     }
 

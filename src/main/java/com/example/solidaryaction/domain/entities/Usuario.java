@@ -3,6 +3,7 @@ package com.example.solidaryaction.domain.entities;
 //Entidade JPA `Usuario`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.
 
+import com.example.solidaryaction.application.DTOs.CriarAdminRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +34,15 @@ public class Usuario {
 
     private String email;
 
+    private String role = "ROLE_USER";
+
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 
+    public Usuario(CriarAdminRequest criarAdminRequest) {
+        this.setCpf(criarAdminRequest.cpf());
+        this.setNome(criarAdminRequest.nome());
+        this.setSenha(criarAdminRequest.senha());
+        this.setEmail(criarAdminRequest.email());
+        this.setRole("ROLE_ADMIN");
+    }
 }

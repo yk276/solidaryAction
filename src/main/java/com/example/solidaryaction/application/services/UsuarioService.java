@@ -1,10 +1,10 @@
 package com.example.solidaryaction.application.services;
 
-import com.example.solidaryaction.application.DTOs.LoginRequest;
-import com.example.solidaryaction.application.DTOs.LoginResponse;
-import com.example.solidaryaction.application.DTOs.UsuarioResponse;
+import com.example.solidaryaction.application.DTOs.*;
+import com.example.solidaryaction.domain.entities.Usuario;
 import com.example.solidaryaction.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +12,9 @@ import java.util.List;
 
 @Service
 public class UsuarioService {
+
+    @Value("${spring.secret}")
+    private String secret;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -36,5 +39,18 @@ public class UsuarioService {
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
+    }
+
+    public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
+
+        if(!criarAdminRequest.secretKey().equals(secret)){
+            return new CriarAdminResponse(0L, "Usuario salvo com sucesso!");
+        }
+
+        Usuario usuarioAdminSalvar = new Usuario(criarAdminRequest);
+
+        usuarioRepository.save(usuarioAdminSalvar);
+
+        return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario salvo com sucesso!");
     }
 }

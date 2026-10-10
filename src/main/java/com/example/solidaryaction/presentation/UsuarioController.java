@@ -3,9 +3,7 @@ package com.example.solidaryaction.presentation;
 //Controller REST de Usuario. Recebe requisições HTTP, chama o Repository correspondente, monta
 //respostas HTTP e documenta os endpoints para o Swagger.
 
-import com.example.solidaryaction.application.DTOs.AtualizarStatusRequest;
-import com.example.solidaryaction.application.DTOs.CadastroRequest;
-import com.example.solidaryaction.application.DTOs.UsuarioResponse;
+import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.UsuarioService;
 import com.example.solidaryaction.domain.entities.EnumStatusUsuario;
 import com.example.solidaryaction.domain.entities.Usuario;
@@ -42,6 +40,7 @@ public class UsuarioController {
     }
 
 
+
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,6 +49,19 @@ public class UsuarioController {
 
         var usuarioBanco = usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuarioBanco);
+
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
+
+        try{
+            CriarAdminResponse respostaSalvar = usuarioService.criarAdmin(criarAdminRequest);
+            return ResponseEntity.ok(respostaSalvar);
+
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().build();
+        }
 
     }
 
