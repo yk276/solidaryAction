@@ -7,7 +7,7 @@ import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestDoador;
 import com.example.solidaryaction.application.DTOs.DoadorResponse;
 import com.example.solidaryaction.application.services.DoadorService;
 import com.example.solidaryaction.domain.entities.Doador;
-import com.example.solidaryaction.domain.entities.EnumStatusDoador;
+import com.example.solidaryaction.application.DTOs.EnumStatusDoador;
 import com.example.solidaryaction.domain.repository.DoadorRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

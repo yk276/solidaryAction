@@ -5,9 +5,7 @@ package com.example.solidaryaction.presentation;
 
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.UsuarioService;
-import com.example.solidaryaction.domain.entities.EnumStatusUsuario;
-import com.example.solidaryaction.domain.entities.Usuario;
-import com.example.solidaryaction.domain.repository.UsuarioRepository;
+import com.example.solidaryaction.application.DTOs.EnumStatusUsuario;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +22,6 @@ import java.util.List;
 @Tag(name = "Usuários", description = "Controller responsável pela gestão de usuários do sistema.")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -34,32 +30,34 @@ public class UsuarioController {
     //frontend/Swagger.
     @GetMapping
     @Operation(summary = "Listar usuários", description = "Método responsável por consultar todos os usuários cadastrados.")
-    public ResponseEntity<List<UsuarioResponse>> listarTodos(){
+    public ResponseEntity<List<UsuarioResponse>> listarTodos() {
 
-        return  ResponseEntity.ok(usuarioService.listarTodosUsuariosTable());
+        return ResponseEntity.ok(usuarioService.listarTodosUsuariosTable());
     }
-
 
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar usuário", description = "Método responsável por registrar um novo usuário no sistema.")
-    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario){
+    public ResponseEntity<?> criar(@RequestBody UsuarioRequest usuario) {
 
-        var usuarioBanco = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(usuarioBanco);
-
+        try {
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario,0L);
+            return ResponseEntity.ok(usuarioBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/admin")
-    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest){
+    public ResponseEntity<CriarAdminResponse> criarAdmin(@RequestBody CriarAdminRequest criarAdminRequest) {
 
-        try{
+        try {
             CriarAdminResponse respostaSalvar = usuarioService.criarAdmin(criarAdminRequest);
             return ResponseEntity.ok(respostaSalvar);
 
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -69,10 +67,10 @@ public class UsuarioController {
     //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar usuário por ID", description = "Método responsável por consultar um usuário específico pelo seu identificador.")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
 
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if(usuarioBanco != null){
+        UsuarioResponse usuarioBanco = usuarioService.buscarPorId(id);
+        if (usuarioBanco != null) {
             return ResponseEntity.ok(usuarioBanco);
         }
         return ResponseEntity.notFound().build();
@@ -81,12 +79,11 @@ public class UsuarioController {
     //Endpoint PATCH: altera somente o status do registro, sem substituir todos os demais campos.
     @PatchMapping("/{id}/status")
     @Operation(summary = "Atualizar status do usuário", description = "Método responsável por alterar o status do usuário.")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest){
+    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequest statusRequest) {
 
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if(usuarioBanco != null ){
-            usuarioBanco.setStatus(statusRequest.status());
-            usuarioRepository.save(usuarioBanco);
+        var atualizarUsuario = usuarioService.atualizarStatus(statusRequest.status(),id);
+
+        if(atualizarUsuario){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -95,21 +92,17 @@ public class UsuarioController {
     //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar usuário", description = "Método responsável por atualizar os dados do um usuário.")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario){
-        try{
-            Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-            if(usuarioBanco != null) {
-                usuarioBanco.setStatus(usuario.getStatus());
-                usuarioBanco.setNome(usuario.getNome());
-                usuarioBanco.setCpf(usuario.getCpf());
-                usuarioBanco.setEmail(usuario.getEmail());
-                usuarioBanco.setSenha(usuario.getSenha());
-                usuarioRepository.save(usuarioBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody UsuarioRequest usuario) {
+        try {
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(usuario,id);
+
+            if(usuarioBanco == null){
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            return ResponseEntity.ok(usuarioBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -117,28 +110,28 @@ public class UsuarioController {
     //alteração.
     @DeleteMapping("/{id}/excluir")
     @Operation(summary = "Excluir usuário", description = "Método responsável por excluir um usuário existente do sistema.")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
 
-        Usuario usuarioBanco = usuarioRepository.findById(id).orElse(null);
-        if(usuarioBanco != null ){
-            usuarioBanco.setStatus(EnumStatusUsuario.EXCLUIDO);
-            usuarioRepository.save(usuarioBanco);
+        var atualizarUsuario = usuarioService.atualizarStatus(EnumStatusUsuario.EXCLUIDO,id);
+
+        if(atualizarUsuario){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
 
     }
 
-    //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
+   // Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/cadastrar")
     @Operation(summary = "Cadastrar usuário", description = "Método responsável por efetuar o cadastro de um novo usuário.")
-    public ResponseEntity<Usuario> cadastrar(@RequestBody CadastroRequest cadastroRequest){
+    public ResponseEntity<?> cadastrar(@RequestBody UsuarioRequest cadastroRequest){
 
-        Usuario usuario = new Usuario();
-        usuario.setNome(cadastroRequest.nome());
-        usuario.setCpf(cadastroRequest.cpf());
-        usuario.setEmail(cadastroRequest.email());
-        var usuarioBanco = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(usuarioBanco);
+        try {
+            UsuarioResponse usuarioBanco = usuarioService.salvarUsuario(cadastroRequest,0L);
+            return ResponseEntity.ok(usuarioBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 }

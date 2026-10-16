@@ -7,7 +7,7 @@ import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestCampanh
 import com.example.solidaryaction.application.DTOs.CampanhaResponse;
 import com.example.solidaryaction.application.services.CampanhaService;
 import com.example.solidaryaction.domain.entities.Campanha;
-import com.example.solidaryaction.domain.entities.EnumStatusCampanha;
+import com.example.solidaryaction.application.DTOs.EnumStatusCampanha;
 import com.example.solidaryaction.domain.repository.CampanhaRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

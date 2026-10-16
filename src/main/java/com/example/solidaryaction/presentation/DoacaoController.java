@@ -7,7 +7,7 @@ import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestDoacao;
 import com.example.solidaryaction.application.DTOs.DoacaoResponse;
 import com.example.solidaryaction.application.services.DoacaoService;
 import com.example.solidaryaction.domain.entities.Doacao;
-import com.example.solidaryaction.domain.entities.EnumStatusDoacao;
+import com.example.solidaryaction.application.DTOs.EnumStatusDoacao;
 import com.example.solidaryaction.domain.repository.DoacaoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

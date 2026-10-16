@@ -5,7 +5,7 @@ package com.example.solidaryaction.presentation;
 
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.OngService;
-import com.example.solidaryaction.domain.entities.EnumStatusOng;
+import com.example.solidaryaction.application.DTOs.EnumStatusOng;
 import com.example.solidaryaction.domain.entities.Ong;
 import com.example.solidaryaction.domain.repository.OngRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +51,7 @@ public class OngController {
     }
 
     @PostMapping("/admin")
+    @Operation(summary = "Criar ONG admin", description = "Método responsável por registrar uma nova ONG admin no sistema.")
     public ResponseEntity<CriarOngAdminResponse> criarOngAdmin(@RequestBody CriarOngAdminRequest criarOngAdminRequest){
 
         try{

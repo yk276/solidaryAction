@@ -3,6 +3,7 @@ package com.example.solidaryaction.domain.entities;
 //Entidade JPA `Doador`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.
 
+import com.example.solidaryaction.application.DTOs.EnumStatusDoador;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

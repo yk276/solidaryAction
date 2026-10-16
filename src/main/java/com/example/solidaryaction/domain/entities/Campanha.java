@@ -1,5 +1,6 @@
 package com.example.solidaryaction.domain.entities;
 
+import com.example.solidaryaction.application.DTOs.EnumStatusCampanha;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 //Entidade JPA `Campanha`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.

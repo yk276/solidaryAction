@@ -3,8 +3,8 @@ package com.example.solidaryaction.domain.entities;
 //Entidade JPA `Ong`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.
 
-import com.example.solidaryaction.application.DTOs.CriarAdminRequest;
 import com.example.solidaryaction.application.DTOs.CriarOngAdminRequest;
+import com.example.solidaryaction.application.DTOs.EnumStatusOng;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

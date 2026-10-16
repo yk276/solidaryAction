@@ -1,7 +1,5 @@
 package com.example.solidaryaction.application.DTOs;
 
-import com.example.solidaryaction.domain.entities.Campanha;
-import com.example.solidaryaction.domain.entities.EnumStatusOng;
 import com.example.solidaryaction.domain.entities.Ong;
 
 import java.math.BigDecimal;
