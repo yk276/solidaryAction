@@ -3,11 +3,8 @@ package com.example.solidaryaction.presentation;
 //Controller REST de Doador. Recebe requisições HTTP, chama o Repository correspondente, monta
 //respostas HTTP e documenta os endpoints para o Swagger.
 
-import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestDoador;
-import com.example.solidaryaction.application.DTOs.DoadorResponse;
+import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.DoadorService;
-import com.example.solidaryaction.domain.entities.Doador;
-import com.example.solidaryaction.application.DTOs.EnumStatusDoador;
 import com.example.solidaryaction.domain.repository.DoadorRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,13 +38,17 @@ public class DoadorController {
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
-    @PostMapping
+    @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar doador", description = "Método responsável por registrar um novo doador no sistema.")
-    public ResponseEntity<Doador> criar(@RequestBody Doador doador){
+    public ResponseEntity<?> criar(@RequestBody DoadorRequest doador){
 
-        var doadorBanco = doadorRepository.save(doador);
-        return ResponseEntity.ok(doadorBanco);
+        try {
+            DoadorResponse doadorBanco = doadorService.salvarDoador(doador,0L);
+            return ResponseEntity.ok(doadorBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
@@ -55,9 +56,9 @@ public class DoadorController {
     //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar doador por ID", description = "Método responsável por consultar um doador específico.")
-    public ResponseEntity<Doador> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<DoadorResponse> buscarPorId(@PathVariable Long id){
 
-        Doador doadorBanco = doadorRepository.findById(id).orElse(null);
+        DoadorResponse doadorBanco = doadorService.buscarPorId(id);
         if(doadorBanco != null){
             return ResponseEntity.ok(doadorBanco);
         }
@@ -69,10 +70,9 @@ public class DoadorController {
     @Operation(summary = "Atualizar status do doador", description = "Método responsável por alterar o status de um doador.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestDoador statusRequestDoador){
 
-        Doador doadorBanco = doadorRepository.findById(id).orElse(null);
-        if(doadorBanco != null ){
-            doadorBanco.setStatus(statusRequestDoador.status());
-            doadorRepository.save(doadorBanco);
+        var atualizarDoador = doadorService.atualizarStatus(statusRequestDoador.status(),id);
+
+        if(atualizarDoador){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -81,21 +81,17 @@ public class DoadorController {
     //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar doador", description = "Método responsável por atualizar os dados de um doador.")
-    public ResponseEntity<Doador> atualizar(@PathVariable Long id, @RequestBody Doador doador){
-        try{
-            Doador doadorBanco = doadorRepository.findById(id).orElse(null);
-            if(doadorBanco != null) {
-                doadorBanco.setNome(doador.getNome());
-                doadorBanco.setCpf(doador.getCpf());
-                doadorBanco.setEmail(doador.getEmail());
-                doadorBanco.setEndereco(doador.getEndereco());
-                doadorBanco.setProfissao(doador.getProfissao());
-                doadorRepository.save(doadorBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody DoadorRequest doador){
+        try {
+            DoadorResponse doadorBanco = doadorService.salvarDoador(doador,id);
+
+            if(doadorBanco == null){
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            return ResponseEntity.ok(doadorBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -105,10 +101,9 @@ public class DoadorController {
     @Operation(summary = "Excluir doador", description = "Método responsável por excluir um doador existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
-        Doador doadorBanco = doadorRepository.findById(id).orElse(null);
-        if(doadorBanco != null ){
-            doadorBanco.setStatus(EnumStatusDoador.EXCLUIDO);
-            doadorRepository.save(doadorBanco);
+        var atualizarDoador = doadorService.atualizarStatus(EnumStatusDoador.EXCLUIDO,id);
+
+        if(atualizarDoador){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

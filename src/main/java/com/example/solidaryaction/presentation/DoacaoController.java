@@ -3,11 +3,8 @@ package com.example.solidaryaction.presentation;
 //Controller REST de Doacao. Recebe requisições HTTP, chama o Repository correspondente, monta
 //respostas HTTP e documenta os endpoints para o Swagger.
 
-import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestDoacao;
-import com.example.solidaryaction.application.DTOs.DoacaoResponse;
+import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.DoacaoService;
-import com.example.solidaryaction.domain.entities.Doacao;
-import com.example.solidaryaction.application.DTOs.EnumStatusDoacao;
 import com.example.solidaryaction.domain.repository.DoacaoRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,13 +38,17 @@ public class DoacaoController {
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
-    @PostMapping
+    @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar doação", description = "Método responsável por criar uma nova doação na plataforma.")
-    public ResponseEntity<Doacao> criar(@RequestBody Doacao doacao){
+    public ResponseEntity<?> criar(@RequestBody DoacaoRequest doacao){
 
-        var doacaoBanco = doacaoRepository.save(doacao);
-        return ResponseEntity.ok(doacaoBanco);
+        try {
+            DoacaoResponse doacaoBanco = doacaoService.salvarDoacao(doacao,0L);
+            return ResponseEntity.ok(doacaoBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
@@ -55,9 +56,9 @@ public class DoacaoController {
     //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar doação por ID", description = "Método responsável por consultar uma doação específica.")
-    public ResponseEntity<Doacao> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<DoacaoResponse> buscarPorId(@PathVariable Long id){
 
-        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
+        DoacaoResponse doacaoBanco = doacaoService.buscarPorId(id);
         if(doacaoBanco != null){
             return ResponseEntity.ok(doacaoBanco);
         }
@@ -69,10 +70,9 @@ public class DoacaoController {
     @Operation(summary = "Atualizar status da doação", description = "Método responsável por alterar o status de uma doação.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestDoacao statusRequestDoacao){
 
-        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
-        if(doacaoBanco != null ){
-            doacaoBanco.setStatus(statusRequestDoacao.status());
-            doacaoRepository.save(doacaoBanco);
+        var atualizarDoacao = doacaoService.atualizarStatus(statusRequestDoacao.status(),id);
+
+        if(atualizarDoacao){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -81,19 +81,17 @@ public class DoacaoController {
     //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar doação", description = "Método responsável por atualizar os dados de uma doação.")
-    public ResponseEntity<Doacao> atualizar(@PathVariable Long id, @RequestBody Doacao doacao){
-        try{
-            Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
-            if(doacaoBanco != null) {
-                doacaoBanco.setDataDoacao(doacao.getDataDoacao());
-                doacaoBanco.setValorDoado(doacao.getValorDoado());
-                doacaoBanco.setDescricao(doacao.getDescricao());
-                doacaoRepository.save(doacaoBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody DoacaoRequest doacao){
+        try {
+            DoacaoResponse doacaoBanco = doacaoService.salvarDoacao(doacao,id);
+
+            if(doacaoBanco == null){
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            return ResponseEntity.ok(doacaoBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -103,10 +101,9 @@ public class DoacaoController {
     @Operation(summary = "Excluir doação", description = "Método responsável por excluir uma doação existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
-        Doacao doacaoBanco = doacaoRepository.findById(id).orElse(null);
-        if(doacaoBanco != null ){
-            doacaoBanco.setStatus(EnumStatusDoacao.EXCLUIDO);
-            doacaoRepository.save(doacaoBanco);
+        var atualizarDoacao = doacaoService.atualizarStatus(EnumStatusDoacao.EXCLUIDO,id);
+
+        if(atualizarDoacao){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

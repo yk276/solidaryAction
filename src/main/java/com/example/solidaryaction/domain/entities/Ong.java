@@ -5,6 +5,9 @@ package com.example.solidaryaction.domain.entities;
 
 import com.example.solidaryaction.application.DTOs.CriarOngAdminRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusOng;
+import com.example.solidaryaction.application.DTOs.OngRequest;
+import com.example.solidaryaction.application.DTOs.UsuarioRequest;
+import com.example.solidaryaction.domain.valueobject.CPF;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,5 +56,15 @@ public class Ong {
         this.setEndereco(criarOngAdminRequest.endereco());
         this.setTotalArrecadado(criarOngAdminRequest.totalArrecadado());
         this.setRole("ROLE_ADMIN");
+    }
+
+    public Ong(OngRequest ong) {
+        this.setNomeFantasia(ong.nomeFantasia());
+        this.setRazaoSocial(ong.razaoSocial());
+        this.setCnpj(ong.cnpj());
+        this.setEmail(ong.email());
+        this.setEndereco(ong.endereco());
+        this.setTotalArrecadado(ong.totalArrecadado());
+        this.setRole("ROLE_USER");
     }
 }

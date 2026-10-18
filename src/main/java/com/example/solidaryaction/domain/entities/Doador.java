@@ -3,7 +3,9 @@ package com.example.solidaryaction.domain.entities;
 //Entidade JPA `Doador`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.
 
+import com.example.solidaryaction.application.DTOs.DoadorRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusDoador;
+import com.example.solidaryaction.application.DTOs.OngRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,4 +39,12 @@ public class Doador {
     public String endereco;
 
     public EnumStatusDoador status = EnumStatusDoador.ATIVO;
+
+    public Doador(DoadorRequest doador) {
+        this.setNome(doador.nome());
+        this.setCpf(doador.cpf());
+        this.setEmail(doador.email());
+        this.setProfissao(doador.profissao());
+        this.setEndereco(doador.endereco());
+    }
 }

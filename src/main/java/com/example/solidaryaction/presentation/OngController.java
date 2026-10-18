@@ -40,13 +40,17 @@ public class OngController {
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
-    @PostMapping
+    @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar ONG", description = "Método responsável por registrar uma nova ONG no sistema.")
-    public ResponseEntity<Ong> criar(@RequestBody Ong ong){
+    public ResponseEntity<?> criar(@RequestBody OngRequest ong){
 
-        var ongBanco = ongRepository.save(ong);
-        return ResponseEntity.ok(ongBanco);
+        try {
+            OngResponse ongBanco = ongService.salvarOng(ong,0L);
+            return ResponseEntity.ok(ongBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
@@ -68,10 +72,10 @@ public class OngController {
     //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar ONG por ID", description = "Método responsável por consultar uma ONG específica")
-    public ResponseEntity<Ong> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<OngResponse> buscarPorId(@PathVariable Long id){
 
-        Ong ongBanco = ongRepository.findById(id).orElse(null);
-        if(ongBanco != null){
+        OngResponse ongBanco = ongService.buscarPorId(id);
+        if (ongBanco != null) {
             return ResponseEntity.ok(ongBanco);
         }
         return ResponseEntity.notFound().build();
@@ -82,10 +86,9 @@ public class OngController {
     @Operation(summary = "Atualizar status da ONG", description = "Método responsável por alterar o status de uma ONG.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestOng statusRequestOng){
 
-        Ong ongBanco = ongRepository.findById(id).orElse(null);
-        if(ongBanco != null ){
-            ongBanco.setStatus(statusRequestOng.status());
-            ongRepository.save(ongBanco);
+        var atualizarOng = ongService.atualizarStatus(statusRequestOng.status(),id);
+
+        if(atualizarOng){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -94,22 +97,17 @@ public class OngController {
     //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar ONG", description = "Método responsável por atualizar os dados de uma ONG.")
-    public ResponseEntity<Ong> atualizar(@PathVariable Long id, @RequestBody Ong ong){
-        try{
-            Ong ongBanco = ongRepository.findById(id).orElse(null);
-            if(ongBanco != null) {
-                ongBanco.setNomeFantasia(ong.getNomeFantasia());
-                ongBanco.setRazaoSocial(ong.getRazaoSocial());
-                ongBanco.setCnpj(ong.getCnpj());
-                ongBanco.setEmail(ong.getEmail());
-                ongBanco.setEndereco(ong.getEndereco());
-                ongBanco.setTotalArrecadado(ong.getTotalArrecadado());
-                ongRepository.save(ongBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody OngRequest ong){
+        try {
+            OngResponse ongBanco = ongService.salvarOng(ong,id);
+
+            if(ongBanco == null){
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            return ResponseEntity.ok(ongBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -119,10 +117,9 @@ public class OngController {
     @Operation(summary = "Excluir ONG", description = "Método responsável por excluir uma ONG existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
-        Ong ongBanco = ongRepository.findById(id).orElse(null);
-        if(ongBanco != null ){
-            ongBanco.setStatus(EnumStatusOng.EXCLUIDO);
-            ongRepository.save(ongBanco);
+        var atualizarOng = ongService.atualizarStatus(EnumStatusOng.EXCLUIDO,id);
+
+        if(atualizarOng){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

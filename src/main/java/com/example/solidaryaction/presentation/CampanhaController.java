@@ -3,11 +3,8 @@ package com.example.solidaryaction.presentation;
 //Controller REST de Campanha. Recebe requisições HTTP, chama o Repository correspondente, monta
 //respostas HTTP e documenta os endpoints para o Swagger.
 
-import com.example.solidaryaction.application.DTOs.AtualizarStatusRequestCampanha;
-import com.example.solidaryaction.application.DTOs.CampanhaResponse;
+import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.CampanhaService;
-import com.example.solidaryaction.domain.entities.Campanha;
-import com.example.solidaryaction.application.DTOs.EnumStatusCampanha;
 import com.example.solidaryaction.domain.repository.CampanhaRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,10 +42,14 @@ public class CampanhaController {
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Criar campanha", description = "Método responsável por registrar uma nova campanha no sistema.")
-    public ResponseEntity<Campanha> criar(@RequestBody Campanha campanha){
+    public ResponseEntity<?> criar(@RequestBody CampanhaRequest campanha){
 
-        var campanhaBanco = campanhaRepository.save(campanha);
-        return ResponseEntity.ok(campanhaBanco);
+        try {
+            CampanhaResponse campanhaBanco = campanhaService.salvarCampanha(campanha,0L);
+            return ResponseEntity.ok(campanhaBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
 
     }
 
@@ -56,9 +57,9 @@ public class CampanhaController {
     //encontra ou 404 quando não encontra.
     @GetMapping("/{id}")
     @Operation(summary = "Buscar campanha por ID", description = "Método responsável por consultar uma campanha específica.")
-    public ResponseEntity<Campanha> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<CampanhaResponse> buscarPorId(@PathVariable Long id){
 
-        Campanha campanhaBanco = campanhaRepository.findById(id).orElse(null);
+        CampanhaResponse campanhaBanco = campanhaService.buscarPorId(id);
         if(campanhaBanco != null){
             return ResponseEntity.ok(campanhaBanco);
         }
@@ -70,10 +71,9 @@ public class CampanhaController {
     @Operation(summary = "Atualizar status da campanha", description = "Método responsável por alterar o status de uma campanha.")
     public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestCampanha statusRequestCampanha){
 
-        Campanha campanhaBanco = campanhaRepository.findById(id).orElse(null);
-        if(campanhaBanco != null ){
-            campanhaBanco.setStatus(statusRequestCampanha.status());
-            campanhaRepository.save(campanhaBanco);
+        var atualizarCampanha = campanhaService.atualizarStatus(statusRequestCampanha.status(),id);
+
+        if(atualizarCampanha){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -82,23 +82,17 @@ public class CampanhaController {
     //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar campanha", description = "Método responsável por atualizar os dados de uma campanha.")
-    public ResponseEntity<Campanha> atualizar(@PathVariable Long id, @RequestBody Campanha campanha){
-        try{
-            Campanha campanhaBanco = campanhaRepository.findById(id).orElse(null);
-            if(campanhaBanco != null) {
-                campanhaBanco.setStatus(campanha.getStatus());
-                campanhaBanco.setTitulo(campanha.getTitulo());
-                campanhaBanco.setDescricao(campanha.getDescricao());
-                campanhaBanco.setMetaFinanceira(campanha.getMetaFinanceira());
-                campanhaBanco.setTotalArrecadado(campanha.getTotalArrecadado());
-                campanhaBanco.setDataInicio(campanha.getDataInicio());
-                campanhaBanco.setDataFim(campanha.getDataFim());
-                campanhaRepository.save(campanhaBanco);
-                return ResponseEntity.ok().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody CampanhaRequest campanha){
+        try {
+            CampanhaResponse campanhaBanco = campanhaService.salvarCampanha(campanha,id);
+
+            if(campanhaBanco == null){
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
-        }catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            return ResponseEntity.ok(campanhaBanco);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -108,10 +102,9 @@ public class CampanhaController {
     @Operation(summary = "Excluir campanha", description = "Método responsável por excluir uma campanha existente do sistema.")
     public ResponseEntity<Void> excluir(@PathVariable Long id){
 
-        Campanha campanhaBanco = campanhaRepository.findById(id).orElse(null);
-        if(campanhaBanco != null ){
-            campanhaBanco.setStatus(EnumStatusCampanha.EXCLUIDO);
-            campanhaRepository.save(campanhaBanco);
+        var atualizarCampanha = campanhaService.atualizarStatus(EnumStatusCampanha.EXCLUIDO,id);
+
+        if(atualizarCampanha){
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();

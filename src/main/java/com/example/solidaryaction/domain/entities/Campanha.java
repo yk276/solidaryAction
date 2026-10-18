@@ -1,5 +1,7 @@
 package com.example.solidaryaction.domain.entities;
 
+import com.example.solidaryaction.application.DTOs.CampanhaRequest;
+import com.example.solidaryaction.application.DTOs.DoacaoRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusCampanha;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,4 +43,13 @@ public class Campanha {
     public String dataFim;
 
     public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
+
+    public Campanha(CampanhaRequest campanha) {
+        this.setTitulo(campanha.titulo());
+        this.setDescricao(campanha.descricao());
+        this.setMetaFinanceira(campanha.metaFinanceira());
+        this.setTotalArrecadado(campanha.totalArrecadado());
+        this.setDataInicio(campanha.dataInicio());
+        this.setDataFim(campanha.dataFim());
+    }
 }

@@ -3,6 +3,7 @@ package com.example.solidaryaction.domain.entities;
 //Entidade JPA `Doacao`. Representa a estrutura persistida no banco e usa Lombok para gerar
 //automaticamente métodos e construtores, reduzindo código repetitivo.
 
+import com.example.solidaryaction.application.DTOs.DoacaoRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusDoacao;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,4 +36,10 @@ public class Doacao {
     public String descricao;
 
     public EnumStatusDoacao status = EnumStatusDoacao.PENDENTE;
+
+    public Doacao(DoacaoRequest doacao) {
+        this.setDataDoacao(doacao.dataDoacao());
+        this.setValorDoado(doacao.valorDoado());
+        this.setDescricao(doacao.descricao());
+    }
 }
