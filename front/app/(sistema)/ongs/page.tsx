@@ -25,11 +25,8 @@ export default function Ongs(){
         } catch (error) {
             alert("Erro ao carregar dados!")
         }
-        
-        
-
     }
-    
+
     //prova - implementar alterar status e deletar
 
     const handlerDeletarOng = async (ong:Ong) => {
@@ -39,7 +36,7 @@ export default function Ongs(){
 
        if(dadosRetorno.status==200){
         alert("Ong foi deletada com sucesso!")
-        
+
        }else {
         alert(dadosRetorno.data);
 
@@ -53,7 +50,6 @@ export default function Ongs(){
     //A alteração de status monta o novo valor, envia um PATCH e recarrega os dados para refletir a mudança na tela.
     const handlerAlterarStatusOng = async(ong:Ong) =>{
 
-
         var novoStatus = {};
         if(ong.status ==="ATIVO"){
             novoStatus = {status:"BLOQUEADO"}
@@ -61,7 +57,7 @@ export default function Ongs(){
             novoStatus = {status:"ATIVO"}
         }
 
-        var dadosRetorno = await  
+        var dadosRetorno = await
         axios.patch('http://localhost:8080/ongs/'+ong.id+'/status',novoStatus);
 
         if(dadosRetorno.status==200){
@@ -118,10 +114,10 @@ export default function Ongs(){
                                     {ong.cnpj}
                                 </td>
                                 <td className="px-4 py-3">
-                                    {ong.totalArrecadado}
+                                    {ong.email}
                                 </td>
                                 <td className="px-4 py-3">
-                                    {ong.email}
+                                    {ong.totalArrecadado}
                                 </td>
                                 <td className="px-4 py-3">
                                     {ong.status}
@@ -136,8 +132,8 @@ export default function Ongs(){
                                         DELETAR</button>
                                         <button onClick = {()=> handlerAlterarStatusOng(ong)}
                                        className= {`rounded-lg font-medium transition-colors ${ong.status ==='BLOQUEADO'
-                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800' 
-                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:text-green-800' }`
+                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800'
+                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:bg-green-700' }`
                                          }>{ong.status}</button>
                                 </td>
                             </tr>
