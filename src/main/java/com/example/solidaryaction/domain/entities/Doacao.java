@@ -31,11 +31,21 @@ public class Doacao {
 
     public String dataDoacao;
 
-    public BigDecimal valorDoado;
+    private BigDecimal valorDoado;
 
     public String descricao;
 
     public EnumStatusDoacao status = EnumStatusDoacao.PENDENTE;
+
+    public void setValorDoado(BigDecimal valorDoado) {
+        if (valorDoado == null || valorDoado.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException(
+                    "O valor da doação deve ser maior que zero!"
+            );
+        }
+
+        this.valorDoado = valorDoado;
+    }
 
     public Doacao(DoacaoRequest doacao) {
         this.setDataDoacao(doacao.dataDoacao());

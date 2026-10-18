@@ -3,6 +3,7 @@ package com.example.solidaryaction.application.services;
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.domain.entities.Ong;
 import com.example.solidaryaction.domain.repository.OngRepository;
+import com.example.solidaryaction.domain.valueobject.CNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class OngService {
             Ong ongBanco = ongRepository.findById(id).orElse(null);
             if (ongBanco != null) {
                 ongBanco.setNomeFantasia(ong.nomeFantasia());
-                ongBanco.setCnpj(ong.cnpj());
+                ongBanco.setCnpj(new CNPJ(ong.cnpj()));
                 ongBanco.setEmail(ong.email());
                 ongBanco.setEndereco(ong.endereco());
                 ongBanco.setTotalArrecadado(ong.totalArrecadado());

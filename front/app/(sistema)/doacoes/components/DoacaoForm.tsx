@@ -36,32 +36,35 @@ export default function DoacaoForm({doacaoExistente}:DoacaoFormProps){
 
     // No envio do formulário, a mesma função decide entre PUT (editar um registro existente) e POST (criar um novo
     //registro) e, ao final, volta para a listagem.
-    const handlerSalvar = async (formData: FormData) => {
-    
-        if(doacaoExistente){
-            var dadosRetorno = await axios.put<number>('http://localhost:8080/doacoes/'+doacao.id,doacao);
-    
-           if(dadosRetorno.status==200){
-            alert("Doação foi salva com sucesso!")
-            
-           }else {
-            alert(dadosRetorno.data);
-    
-           }
-    
-        }else {
-           var dadosRetorno = await axios.post<number>('http://localhost:8080/doacoes/criar',doacao)
-    
-           if(dadosRetorno.status==200){
-            alert("Doação foi salva com sucesso!")
-            
-           }else {
-            alert(dadosRetorno.data);
-    
-           }
+        const handlerSalvar = async (formData: FormData) => {
+        try {
+            if (doacaoExistente) {
+                await axios.put(
+                    'http://localhost:8080/doacoes/' + doacao.id,
+                    doacao
+                );
+            } else {
+                await axios.post(
+                    'http://localhost:8080/doacoes/criar',
+                    doacao
+                );
+            }
+
+            alert("Doação foi salva com sucesso!");
+            router.push("/doacoes");
+
+        } catch (erro) {
+            if (
+                axios.isAxiosError(erro) &&
+                erro.response?.status === 400 &&
+                doacao.valorDoado <= 0
+            ) {
+                alert("O valor da doação deve ser maior que zero!");
+            } else {
+                alert("Não foi possível salvar a doação. Verifique os dados e tente novamente.");
+            }
         }
-           router.push("/doacoes")
-        }
+    }
 
     return(
         <form action = {handlerSalvar} className="max-w-2xl mx-auto bg-white rounded-xl border border-purple-100 shadow-sm p-6 md:p-8">
