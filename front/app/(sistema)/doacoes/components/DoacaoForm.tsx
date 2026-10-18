@@ -50,7 +50,7 @@ export default function DoacaoForm({doacaoExistente}:DoacaoFormProps){
            }
     
         }else {
-           var dadosRetorno = await axios.post<number>('http://localhost:8080/doacoes',doacao)
+           var dadosRetorno = await axios.post<number>('http://localhost:8080/doacoes/criar',doacao)
     
            if(dadosRetorno.status==200){
             alert("Doação foi salva com sucesso!")

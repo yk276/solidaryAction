@@ -53,7 +53,7 @@ export default function DoadorForm({doadorExistente}:DoadorFormProps){
            }
     
         }else {
-           var dadosRetorno = await axios.post<number>('http://localhost:8080/doadores',doador)
+           var dadosRetorno = await axios.post<number>('http://localhost:8080/doadores/criar',doador)
     
            if(dadosRetorno.status==200){
             alert("Doador foi salvo com sucesso!")

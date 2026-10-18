@@ -56,7 +56,7 @@ export default function OngForm({ongExistente}:OngFormProps){
            }
     
         }else {
-           var dadosRetorno = await axios.post<number>('http://localhost:8080/ongs',ong)
+           var dadosRetorno = await axios.post<number>('http://localhost:8080/ongs/criar',ong)
     
            if(dadosRetorno.status==200){
             alert("Ong foi salva com sucesso!")
