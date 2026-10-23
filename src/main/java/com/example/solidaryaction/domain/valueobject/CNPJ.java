@@ -1,7 +1,7 @@
 package com.example.solidaryaction.domain.valueobject;
 
 import jakarta.persistence.Embeddable;
-
+// value object = DDD
 @Embeddable
 public class CNPJ {
 

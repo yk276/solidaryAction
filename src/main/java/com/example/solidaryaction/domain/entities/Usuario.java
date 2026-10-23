@@ -5,12 +5,21 @@ package com.example.solidaryaction.domain.entities;
 
 import com.example.solidaryaction.application.DTOs.CriarAdminRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusUsuario;
+import com.example.solidaryaction.application.DTOs.UsuarioLogado;
 import com.example.solidaryaction.application.DTOs.UsuarioRequest;
 import com.example.solidaryaction.domain.valueobject.CPF;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 //As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
 //como getters, setters e construtores.
@@ -18,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class Usuario implements UserDetails {
 
     //Este campo é a chave primária da entidade; @GeneratedValue deixa a geração do identificador a cargo do
     //banco/JPA.
@@ -41,7 +50,7 @@ public class Usuario {
 
     public void setEmail(String email){
         if(!email.isEmpty() && !email.contains("@")){
-            throw new IllegalArgumentException("Email inmválido!");
+            throw new IllegalArgumentException("Email inválido!");
         }
         this.email = email;
     }
@@ -59,6 +68,30 @@ public class Usuario {
         this.setNome(usuario.nome());
         this.setSenha(usuario.senha());
         this.setEmail(usuario.email());
-        this.setRole("ROLE_USER");
+
+        if(usuario.perfil().equals("C")){
+            this.setRole("ROLE_COORDENADOR");
+        }else {
+            this.setRole("ROLE_USER");
+        }
+    }
+
+    public UsuarioLogado getUsuarioLogado(){
+        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.role));
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
     }
 }

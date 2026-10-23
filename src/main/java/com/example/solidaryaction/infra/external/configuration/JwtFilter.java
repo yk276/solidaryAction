@@ -1,15 +1,19 @@
 package com.example.solidaryaction.infra.external.configuration;
 
+import com.example.solidaryaction.application.DTOs.UsuarioLogado;
 import com.example.solidaryaction.application.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 //Filtro executado uma vez por requisição. Decide quais rotas passam sem token e, nas demais, lê
 //o cabeçalho Authorization e valida o JWT antes de continuar a cadeia de filtros.
@@ -33,7 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
         || uri.startsWith("webjars")
         || uri.startsWith("/auth/login")
         || uri.startsWith("/cadastrar")
-                || uri.startsWith("/")
         ){
             //Se a validação permitir, a requisição continua pela cadeia de filtros até chegar ao endpoint solicitado.
             filterChain.doFilter(request,response);
@@ -48,9 +51,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try{
 
-                var jwtValidador = tokenService.verificarToken(token);
+                var usuarioLogado = tokenService.verificarToken(token);
 
-                System.out.println(jwtValidador.getSubject());
+                var user = new UsernamePasswordAuthenticationToken(
+                        usuarioLogado,
+                        null,
+                        usuarioLogado.authorities()
+                );
+
+                SecurityContextHolder.getContext().setAuthentication(user);
 
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
