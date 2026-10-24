@@ -22,4 +22,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
     //do nome do método.
     Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario status);
 
+    List<Usuario> getUsuarioByEmpresa_Id(Long empresa);
+
 }

@@ -28,7 +28,7 @@ public class SecurityConfiguration {
                             "/webjars?**",
                             "/swagger-resources/**",
                             "/v3/api-docs/**"
-                    ).permitAll().anyRequest().authenticated()
+                    ).permitAll()
                             .requestMatchers("/ongs/**")
                             .hasRole("COORDENADOR")
                             .anyRequest().authenticated()

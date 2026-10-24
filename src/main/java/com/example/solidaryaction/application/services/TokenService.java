@@ -8,6 +8,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.example.solidaryaction.application.DTOs.LoginRequest;
 import com.example.solidaryaction.application.DTOs.UsuarioLogado;
 import com.example.solidaryaction.domain.entities.Token;
 import com.example.solidaryaction.domain.entities.Usuario;
@@ -41,28 +42,24 @@ public class TokenService {
 
     //Gera um JWT contendo as informações definidas pelo sistema, assina o token com a chave secreta e define sua
     //validade.
-    public String gerarToken(String loginRequestDto){
+    public String gerarToken(LoginRequest loginResquestDto){
 
-        try{
+        Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+        var usuario = usuarioRepository.findAll()
+                .stream().filter( u-> u.getEmail().equals(loginResquestDto.email()))
+                .findFirst().orElse(null);
 
-            var usuario = usuarioRepository.findAll().
-                    stream().filter(u->u.getEmail().equals(loginRequestDto.email()));
+        String token = JWT.create()
+                .withIssuer(emissor)
+                .withSubject(loginResquestDto.email())
+                .withExpiresAt(this.gerarDataExpiracao())
+                .sign(algorithm);
 
-            String token = com.auth0.jwt.JWT.create()
-                    .withIssuer(emissor)
-                    .withSubject(loginRequestDto.email())
-                    .withExpiresAt(getDataExpiracao())
-                    .sign(algorithm);
 
-            tokenRepository.save(new Token(token, (Usuario) usuario));
+        tokenRepository.save(new Token(token,usuario));
 
-            return token;
-
-        } catch (RuntimeException e){
-            throw new RuntimeException(e);
-        }
+        return token;
     }
 
     public UsuarioLogado verificarToken(String token) throws JWTVerificationException {
@@ -81,7 +78,7 @@ public class TokenService {
         return new UsuarioLogado(tokenBanco.getUsuario());
     }
 
-    private Instant getDataExpiracao(){
+    private Instant gerarDataExpiracao(){
 
         //pegar data atual
         var dataAtual = LocalDateTime.now();

@@ -19,7 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 //As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
 //como getters, setters e construtores.
@@ -45,6 +47,18 @@ public class Usuario implements UserDetails {
     private String email;
 
     private String role = "ROLE_USER";
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
+    private Empresa empresa;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tb_matricula",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "curso_id")
+    )
+    private Set<Curso> cursos = new HashSet<>();
 
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 

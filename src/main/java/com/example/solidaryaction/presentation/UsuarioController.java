@@ -134,4 +134,15 @@ public class UsuarioController {
         }
     }
 
+    @PatchMapping("/{id}/matricular")
+    public ResponseEntity<?> matricular(@PathVariable Long id, @RequestBody MatriculaRequest){
+
+        var retornoMatricula = usuarioService.matricularAluno(id,matriculaRequest);
+
+        if(retornoMatricula){
+            return ResponseEntity
+        }
+
+    }
+
 }

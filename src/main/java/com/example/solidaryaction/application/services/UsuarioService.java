@@ -7,6 +7,7 @@ import com.example.solidaryaction.domain.repository.UsuarioRepository;
 import com.example.solidaryaction.domain.valueobject.CPF;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +25,12 @@ public class UsuarioService {
     @Autowired
     private TokenService tokenService;
 
-    public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest loginRequest){
+    public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest request){
 
-        if(usuarioRepository.existsUsuarioByEmailAndSenha(loginRequest.email(), loginRequest.senha())){
+        if(usuarioRepository.existsUsuarioByEmailAndSenha(request.email(), request.senha())){
             //gerar o token
 
-            var token = tokenService.gerarToken(loginRequest.email());
+            var token = tokenService.gerarToken(request);
             return new LoginResponse(token);
         }
         return null;
@@ -37,7 +38,15 @@ public class UsuarioService {
 
     public List<UsuarioResponse> listarTodosUsuariosTable(){
 
-        return  usuarioRepository.findAll()
+        var usuarioLogado = getUsuarioLogado();
+
+        if(usuarioLogado.empresa_id() ==null){
+            return  usuarioRepository.findAll()
+                    .stream()
+                    .map(UsuarioResponse::new)
+                    .toList();
+        }
+        return  usuarioRepository.getUsuarioByEmpresa_Id(usuarioLogado.empresa_id())
                 .stream()
                 .map(UsuarioResponse::new)
                 .toList();
@@ -54,6 +63,10 @@ public class UsuarioService {
         usuarioRepository.save(usuarioAdminSalvar);
 
         return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario salvo com sucesso!");
+    }
+
+    public UsuarioLogado getUsuarioLogado(){
+        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
