@@ -45,7 +45,13 @@ public class DoacaoController {
 
         try {
             DoacaoResponse doacaoBanco = doacaoService.salvarDoacao(doacao,0L);
+
+            if (doacaoBanco == null) {
+                return ResponseEntity.notFound().build();
+            }
+
             return ResponseEntity.ok(doacaoBanco);
+
         } catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -68,13 +74,20 @@ public class DoacaoController {
     //Endpoint PATCH: altera somente o status do registro, sem substituir todos os demais campos.
     @PatchMapping("/{id}/status")
     @Operation(summary = "Atualizar status da doação", description = "Método responsável por alterar o status de uma doação.")
-    public ResponseEntity<Void> atualizarStatus(@PathVariable Long id, @RequestBody AtualizarStatusRequestDoacao statusRequestDoacao){
+    public ResponseEntity<DoacaoResponse> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody AtualizarStatusRequestDoacao statusRequestDoacao) {
 
-        var atualizarDoacao = doacaoService.atualizarStatus(statusRequestDoacao.status(),id);
+        var atualizarDoacao = doacaoService.atualizarStatus(
+                statusRequestDoacao.status(), id
+        );
 
-        if(atualizarDoacao){
-            return ResponseEntity.ok().build();
+        if (atualizarDoacao) {
+            DoacaoResponse resposta = doacaoService.buscarPorId(id);
+
+            return ResponseEntity.ok(resposta);
         }
+
         return ResponseEntity.notFound().build();
     }
 

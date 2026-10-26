@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -20,20 +21,85 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        return http.cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/auth/login",
+                                "/swagger-ui/**",
+                                "/webjars?**",
+                                "/swagger-resources/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
 
-            return http.cors(Customizer.withDefaults())
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth .requestMatchers("/auth/login",
-                            "/swagger-ui/**",
-                            "/webjars?**",
-                            "/swagger-resources/**",
-                            "/v3/api-docs/**"
-                    ).permitAll()
-                            .requestMatchers("/ongs/**")
-                            .hasRole("COORDENADOR")
-                            .anyRequest().authenticated()
-                    )
-                    .addFilterBefore( jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                    .build();
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/campanhas",
+                                "/campanhas/**"
+                        )
+                        .hasAnyRole("ADMIN", "COORDENADOR", "USER")
+
+                        .requestMatchers("/campanhas", "/campanhas/**")
+                        .hasAnyRole("ADMIN", "COORDENADOR")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/doadores",
+                                "/doadores/**"
+                        )
+                        .hasAnyRole("ADMIN", "COORDENADOR", "USER")
+
+                        .requestMatchers("/doadores", "/doadores/**")
+                        .hasAnyRole("ADMIN", "COORDENADOR")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/doacoes",
+                                "/doacoes/**"
+                        )
+                        .hasAnyRole("ADMIN", "COORDENADOR", "USER")
+
+                        .requestMatchers("/doacoes", "/doacoes/**")
+                        .hasAnyRole("ADMIN", "COORDENADOR")
+
+                        .requestMatchers(HttpMethod.POST, "/usuarios/admin")
+                        .permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/usuarios",
+                                "/usuarios/**"
+                        )
+                        .hasAnyRole("ADMIN", "COORDENADOR", "USER")
+
+                        .requestMatchers("/usuarios", "/usuarios/**")
+                        .hasAnyRole("ADMIN", "COORDENADOR")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/ongs/*/coordenadores"
+                        )
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/ongs",
+                                "/ongs/**"
+                        )
+                        .hasAnyRole("ADMIN", "COORDENADOR", "USER")
+
+                        .requestMatchers(HttpMethod.PUT, "/ongs/*")
+                        .hasAnyRole("ADMIN", "COORDENADOR")
+
+                        .requestMatchers("/ongs", "/ongs/**")
+                        .hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .build();
     }
 }

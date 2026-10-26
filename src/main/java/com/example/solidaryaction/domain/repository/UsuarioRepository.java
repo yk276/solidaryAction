@@ -18,10 +18,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
 
     boolean existsUsuarioByEmailAndSenha(String email, String senha);
 
+    Optional<Usuario> findByEmailAndSenha(String email, String senha);
+
     //Este método segue a convenção de nomes do Spring Data JPA; o framework monta automaticamente a consulta a partir
     //do nome do método.
     Optional<List<Usuario>> findByStatusNot(EnumStatusUsuario status);
 
-    List<Usuario> getUsuarioByEmpresa_Id(Long empresa);
+    List<Usuario> findByOng_Id(Long ongId);
+
+    Optional<Usuario> findByIdAndOng_Id(Long id, Long ongId);
 
 }

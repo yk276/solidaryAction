@@ -9,20 +9,35 @@ import { useState } from "react";
 //Formulário reutilizável de usuário. Centraliza o estado dos campos, alterações feitas pelo
 //usuário e a decisão entre criar um novo registro com POST ou atualizar um existente com PUT.
 
-export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
+export default function UsuarioForm({usuarioExistente}: UsuarioFormProps){
     const router = useRouter();
 
-    //O estado do formulário começa com a usuario existente quando é edição; se não houver registro, cria um objeto
-    //vazio para cadastro.
-    const [ usuario, setUsuario] = useState<Usuario>(
-        usuarioExistente || 
-        new Usuario(null,"","","ATIVO","","") // estado inicial
+    //Identifica se o registro em edição é de um administrador.
+    const administrador = usuarioExistente?.role === "ROLE_ADMIN";
+
+    //Na edição, transforma o role retornado pelo backend no código do combobox.
+    const [usuario, setUsuario] = useState<Usuario>(
+        usuarioExistente
+            ? new Usuario(
+                usuarioExistente.id,
+                usuarioExistente.nome,
+                usuarioExistente.email,
+                usuarioExistente.status,
+                usuarioExistente.cpf,
+                usuarioExistente.senha ?? "",
+                usuarioExistente.role === "ROLE_COORDENADOR" ? "C" : "U",
+                usuarioExistente.role,
+                usuarioExistente.ongId
+            )
+            : new Usuario(null, "", "", "ATIVO", "", "", "U")
     );
 
-    // Centraliza a atualização dos campos do formulário. Cada alteração recria o objeto preservando os demais valores
-    //já digitados.
-    const handlerChange = ( campo: 'nome'| 'email'| 'cpf'| 'senha', valor:string) => {
-        setUsuario(valorAnterior => 
+    //Atualiza o campo escolhido, preservando os demais dados.
+    const handlerChange = (
+        campo: 'nome' | 'email' | 'cpf' | 'senha' | 'perfil',
+        valor: string
+    ) => {
+        setUsuario(valorAnterior =>
             new Usuario(
                 valorAnterior.id,
                 campo === 'nome' ? valor : valorAnterior.nome,
@@ -30,100 +45,142 @@ export default function UsuarioForm({usuarioExistente}:UsuarioFormProps){
                 valorAnterior.status,
                 campo === 'cpf' ? valor : valorAnterior.cpf,
                 campo === 'senha' ? valor : valorAnterior.senha,
+                campo === 'perfil' ? valor : valorAnterior.perfil,
+                valorAnterior.role,
+                valorAnterior.ongId
             )
-        )
+        );
     }
 
-    // No envio do formulário, a mesma função decide entre PUT (editar um registro existente) e POST (criar um novo
-    //registro) e, ao final, volta para a listagem.
+    //Decide entre editar um registro existente ou cadastrar um novo.
     const handlerSalvar = async (formData: FormData) => {
 
-    
-    if(usuarioExistente){
-        var dadosRetorno = await axios.put<number>('http://localhost:8080/usuarios/'+usuario.id,usuario);
+        if (usuarioExistente) {
+            var dadosRetorno = await axios.put<number>(
+                'http://localhost:8080/usuarios/' + usuario.id,
+                usuario
+            );
 
-       if(dadosRetorno.status==200){
-        alert("Usuário foi salvo com sucesso!")
-        
-       }else {
-        alert(dadosRetorno.data);
+            if (dadosRetorno.status == 200) {
+                alert("Usuário foi salvo com sucesso!");
+            } else {
+                alert(dadosRetorno.data);
+            }
 
-       }
+        } else {
+            var dadosRetorno = await axios.post<number>(
+                'http://localhost:8080/usuarios/criar',
+                usuario
+            );
 
-    }else {
-       var dadosRetorno = await axios.post<number>('http://localhost:8080/usuarios/criar',usuario)
+            if (dadosRetorno.status == 200) {
+                alert("Usuário foi salvo com sucesso!");
+            } else {
+                alert(dadosRetorno.data);
+            }
+        }
 
-       if(dadosRetorno.status==200){
-        alert("Usuário foi salvo com sucesso!")
-        
-       }else {
-        alert(dadosRetorno.data);
-
-       }
-    }
-       router.push("/usuarios")
+        router.push("/usuarios");
     }
 
     return(
-        <form action = {handlerSalvar} className="max-w-2xl mx-auto bg-white rounded-xl border border-purple-100 shadow-sm p-6 md:p-8">
+        <form
+            action={handlerSalvar}
+            className="max-w-2xl mx-auto bg-white rounded-xl border border-purple-100 shadow-sm p-6 md:p-8"
+        >
             <div className="flex flex-col gap-4">
+
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
                         Nome completo:
                     </label>
                     <input
-                    name="nome"
-                    value={usuario.nome}
-                    required
-                    onChange={(e)=> handlerChange('nome',e.target.value)}// dispara função
-                    placeholder="Seu nome aqui"
-                    className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
+                        name="nome"
+                        value={usuario.nome}
+                        required
+                        onChange={(e) => handlerChange('nome', e.target.value)}
+                        placeholder="Seu nome aqui"
+                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                    />
                 </div>
+
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
                         CPF:
                     </label>
                     <input
-                    name="CPF"
-                    value={usuario.cpf}
-                    required
-                    placeholder="000.000.000.-00"
-                    onChange={(e)=> handlerChange('cpf',e.target.value)}
-                    className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
+                        name="CPF"
+                        value={usuario.cpf}
+                        required
+                        placeholder="000.000.000.-00"
+                        onChange={(e) => handlerChange('cpf', e.target.value)}
+                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                    />
                 </div>
+
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
                         Email:
                     </label>
                     <input
-                    name="email"
-                    value={usuario.email}
-                    required
-                    placeholder="seuemail@"
-                    onChange={(e)=> handlerChange('email',e.target.value)}
-                    className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
+                        name="email"
+                        value={usuario.email}
+                        required
+                        placeholder="seuemail@"
+                        onChange={(e) => handlerChange('email', e.target.value)}
+                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                    />
                 </div>
+
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
                         Senha:
                     </label>
                     <input
-                    name="senha"
-                    required
-                    placeholder="****"
-                    onChange={(e)=> handlerChange('senha',e.target.value)}
-                    value={usuario.senha}
-                    className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
+                        name="senha"
+                        required
+                        placeholder="****"
+                        onChange={(e) => handlerChange('senha', e.target.value)}
+                        value={usuario.senha}
+                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                    />
                 </div>
 
+                {!administrador && (
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Perfil:
+                        </label>
+                        <select
+                            name="perfil"
+                            value={usuario.perfil}
+                            required
+                            onChange={(e) =>
+                                handlerChange('perfil', e.target.value)
+                            }
+                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                        >
+                            <option value="C">Coordenador</option>
+                            <option value="U">Usuário</option>
+                        </select>
+                    </div>
+                )}
+
                 <div className="flex items-center justify-end gap-3 mt-2">
-                    <Link href="/usuarios" className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100">Cancelar</Link>
-                    <button type="submit" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Salvar</button>
+                    <Link
+                        href="/usuarios"
+                        className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100"
+                    >
+                        Cancelar
+                    </Link>
+                    <button
+                        type="submit"
+                        className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
+                    >
+                        Salvar
+                    </button>
                 </div>
+
             </div>
         </form>
     );

@@ -10,6 +10,7 @@ public record OngResponse(
         String razaoSocial,
         String cnpj,
         String email,
+        String endereco,
         BigDecimal totalArrecadado,
         EnumStatusOng status
 ) {
@@ -21,6 +22,7 @@ public record OngResponse(
                 ongEntidade.getRazaoSocial(),
                 ongEntidade.getCnpj().toString(),
                 ongEntidade.getEmail(),
+                ongEntidade.getEndereco(),
                 ongEntidade.getTotalArrecadado(),
                 ongEntidade.getStatus()
         );

@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 
@@ -36,7 +38,7 @@ public class Campanha {
 
     public BigDecimal metaFinanceira;
 
-    public BigDecimal totalArrecadado;
+    public BigDecimal totalArrecadado = BigDecimal.ZERO;
 
     public String dataInicio;
 
@@ -44,11 +46,23 @@ public class Campanha {
 
     public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ong_id", nullable = false)
+    private Ong ong;
+
+    public boolean isMetaAtingida() {
+
+        if (metaFinanceira == null || totalArrecadado == null) {
+            return false;
+        }
+
+        return totalArrecadado.compareTo(metaFinanceira) >= 0;
+    }
+
     public Campanha(CampanhaRequest campanha) {
         this.setTitulo(campanha.titulo());
         this.setDescricao(campanha.descricao());
         this.setMetaFinanceira(campanha.metaFinanceira());
-        this.setTotalArrecadado(campanha.totalArrecadado());
         this.setDataInicio(campanha.dataInicio());
         this.setDataFim(campanha.dataFim());
     }

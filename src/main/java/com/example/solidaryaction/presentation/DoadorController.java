@@ -34,7 +34,7 @@ public class DoadorController {
     @Operation(summary = "Listar doadores", description = "Método responsável por consultar todos os doadores cadastrados.")
     public ResponseEntity<List<DoadorResponse>> listarTodos(){
 
-        return  ResponseEntity.ok(doadorService.listarTodasDoadoresTable());
+        return  ResponseEntity.ok(doadorService.listarTodosDoadoresTable());
     }
 
     //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.

@@ -10,29 +10,51 @@ import { LoginResponse } from "../types/auth";
 export default function Login(){
     const router = useRouter();
 
-    //handleLogin lê email e senha enviados pelo formulário, chama o endpoint de autenticação e trata sucesso ou erro.
-    const handleLogin = async(formData:FormData) => {
-        try{
-        debugger;
-        const emailTela = formData.get("email")?.toString() ?? "";
-        const senhaTela = formData.get("senha")?.toString() ?? "";
+    //Realiza o login e guarda o token, o perfil e a ONG.
+    const handleLogin = async (formData: FormData) => {
+        try {
+            debugger;
 
-        // O Axios envia as credenciais ao Spring Boot. A tipagem LoginResponse informa ao TypeScript qual formato de
-        //resposta é esperado.
-        var loginResposta = await axios.post<LoginResponse>("http://localhost:8080/auth/login",
-        {email:emailTela,senha:senhaTela});
+            const emailTela = formData.get("email")?.toString() ?? "";
+            const senhaTela = formData.get("senha")?.toString() ?? "";
 
-        if(loginResposta.status==200){
-            //Quando o login retorna sucesso, o router do Next.js navega para a área interna sem recarregar toda a aplicação.
-            router.push("/home")
-        }else{
-            alert("Login ou senha inválido!")
+            var loginResposta = await axios.post<LoginResponse>(
+                "http://localhost:8080/auth/login",
+                {
+                    email: emailTela,
+                    senha: senhaTela
+                }
+            );
+
+            if (loginResposta.status == 200) {
+
+                const token = loginResposta.data.token;
+
+                localStorage.setItem("token", token);
+
+                axios.defaults.headers.common["Authorization"] =
+                    "Bearer " + token;
+
+                localStorage.setItem("role", loginResposta.data.role);
+
+                if (loginResposta.data.ongId != null) {
+                    localStorage.setItem(
+                        "ongId",
+                        loginResposta.data.ongId.toString()
+                    );
+                } else {
+                    localStorage.removeItem("ongId");
+                }
+
+                router.push("/home");
+
+            } else {
+                alert("Login ou senha inválido!");
+            }
+
+        } catch (error) {
+            alert("Login ou senha inválido!");
         }
-    }catch (error){
-        alert("Login ou senha inválido!")
-    }
-        
-
     }
 
     return(
@@ -43,38 +65,40 @@ export default function Login(){
                         Entrar no sistema
                     </h1>
                 </div>
-                {/* O formulário usa a Server Action-style prop action para entregar os dados diretamente à função handleLogin no */}
-                {/* cliente. */}
+
+                {/* O formulário entrega os dados à função handleLogin no cliente. */}
                 <form action={handleLogin} className="flex flex-col gap-4">
 
-                   <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700">
-                        E-Mail
-                    </label>
-                    <input
-                        name="email" type="email"
-                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
-                   </div>
-                   <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700">
-                        Senha
-                    </label>
-                    <input
-                        name="senha" type="password"
-                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
-                    </input>
-                   </div>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            E-Mail
+                        </label>
+                        <input
+                            name="email"
+                            type="email"
+                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                        </input>
+                    </div>
 
-                   <button
-                    type="submit"
-                    className="mt-2 w-full rounded-lg bg-purple-400 py-2.5 font-semibold text-white transition hover:bg-purple-400 active:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2">
-                    Entrar
-                   </button>
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Senha
+                        </label>
+                        <input
+                            name="senha"
+                            type="password"
+                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                        </input>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="mt-2 w-full rounded-lg bg-purple-400 py-2.5 font-semibold text-white transition hover:bg-purple-400 active:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2">
+                        Entrar
+                    </button>
 
                 </form>
             </div>
         </div>
-
     );
 }

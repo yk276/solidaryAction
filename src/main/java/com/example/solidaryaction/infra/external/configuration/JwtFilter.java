@@ -20,36 +20,40 @@ import java.util.List;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired // injeção de dependencia
+    @Autowired
     private TokenService tokenService;
 
     @Override
-    //Este filtro intercepta requisições antes de chegarem aos controllers para verificar se existe um token JWT
-    //válido.
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String uri = request.getRequestURI();
 
-        if(uri.startsWith("/swagger-ui")
-        || uri.startsWith("/v2/api-docs")
-        || uri.startsWith("/v3/api-docs")
-        || uri.startsWith("/swagger-resources")
-        || uri.startsWith("webjars")
-        || uri.startsWith("/auth/login")
-        || uri.startsWith("/cadastrar")
-        ){
-            //Se a validação permitir, a requisição continua pela cadeia de filtros até chegar ao endpoint solicitado.
-            filterChain.doFilter(request,response);
+        if (uri.startsWith("/swagger-ui")
+                || uri.startsWith("/v2/api-docs")
+                || uri.startsWith("/v3/api-docs")
+                || uri.startsWith("/swagger-resources")
+                || uri.startsWith("webjars")
+                || uri.startsWith("/auth/login")
+                || uri.startsWith("/cadastrar")
+                || (request.getMethod().equals("POST")
+                && uri.equals("/usuarios/admin"))) {
+
+            filterChain.doFilter(request, response);
             return;
         }
 
-        //Lê o cabeçalho Authorization, local onde normalmente chega o token no formato Bearer <token>.
+        //Lê o token enviado no cabeçalho Authorization.
         String authHeader = request.getHeader("Authorization");
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
             String token = authHeader.replace("Bearer ", "");
 
-            try{
+            try {
 
                 var usuarioLogado = tokenService.verificarToken(token);
 
@@ -66,14 +70,13 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.getWriter().println("Token invalido");
                 return;
             }
-        }else {
+
+        } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().println("Token invalido");
             return;
         }
 
-
-        filterChain.doFilter(request,response);
-
+        filterChain.doFilter(request, response);
     }
 }

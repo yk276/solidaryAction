@@ -1,20 +1,18 @@
-//Arquivo de tipagem TypeScript para `doacao`. Define o formato dos dados usados no frontend e,
-//quando existe, a tipagem das props entregues aos formulários.
-
-//Esta classe TypeScript define o formato usado pelo frontend para representar esta entidade e manter os dados
-//tipados.
-
-export class Doacao{
+//Define os dados da doação utilizados pelo frontend.
+export class Doacao {
     constructor(
         public id: number | null,
-        public dataDoacao:string,
-        public valorDoado:number,
-        public descricao:string,
-        public status:string
-    ){}
+        public dataDoacao: string,
+        public valorDoado: number,
+        public descricao: string,
+        public status: string,
+        public campanhaId: number | null = null,
+        public doadorId: number | null = null,
+        public metaAtingida: boolean = false,
+        public mensagem: string = ""
+    ) {}
 }
-//A interface/type descreve a estrutura esperada para propriedades ou respostas, permitindo ao TypeScript validar
-//o uso dos dados.
-export interface DoacaoFormProps{
-    doacaoExistente?:Doacao
+
+export interface DoacaoFormProps {
+    doacaoExistente?: Doacao;
 }

@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 //As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
 //como getters, setters e construtores.
@@ -39,6 +41,10 @@ public class Doador {
     public String endereco;
 
     public EnumStatusDoador status = EnumStatusDoador.ATIVO;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "ong_id", nullable = false)
+    private Ong ong;
 
     public Doador(DoadorRequest doador) {
         this.setNome(doador.nome());

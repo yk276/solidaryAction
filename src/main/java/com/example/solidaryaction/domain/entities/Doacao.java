@@ -12,6 +12,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 
@@ -36,6 +38,14 @@ public class Doacao {
     public String descricao;
 
     public EnumStatusDoacao status = EnumStatusDoacao.PENDENTE;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "campanha_id", nullable = false)
+    private Campanha campanha;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "doador_id", nullable = false)
+    private Doador doador;
 
     public void setValorDoado(BigDecimal valorDoado) {
         if (valorDoado == null || valorDoado.compareTo(BigDecimal.ZERO) <= 0) {

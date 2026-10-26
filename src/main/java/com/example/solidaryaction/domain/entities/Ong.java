@@ -43,9 +43,7 @@ public class Ong {
 
     public String endereco;
 
-    public BigDecimal totalArrecadado;
-
-    private String role = "ROLE_ONG";
+    public BigDecimal totalArrecadado = BigDecimal.ZERO;
 
     public EnumStatusOng status = EnumStatusOng.ATIVO;
 
@@ -55,8 +53,6 @@ public class Ong {
         this.setCnpj(new CNPJ(criarOngAdminRequest.cnpj()));
         this.setEmail(criarOngAdminRequest.email());
         this.setEndereco(criarOngAdminRequest.endereco());
-        this.setTotalArrecadado(criarOngAdminRequest.totalArrecadado());
-        this.setRole("ROLE_ADMIN");
     }
 
     public Ong(OngRequest ong) {
@@ -65,7 +61,5 @@ public class Ong {
         this.setCnpj(new CNPJ(ong.cnpj()));
         this.setEmail(ong.email());
         this.setEndereco(ong.endereco());
-        this.setTotalArrecadado(ong.totalArrecadado());
-        this.setRole("ROLE_USER");
     }
 }

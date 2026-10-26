@@ -19,9 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 //As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
 //como getters, setters e construtores.
@@ -48,17 +46,9 @@ public class Usuario implements UserDetails {
 
     private String role = "ROLE_USER";
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "empresa_id", referencedColumnName = "id")
-    private Empresa empresa;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tb_matricula",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "curso_id")
-    )
-    private Set<Curso> cursos = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "ong_id", referencedColumnName = "id", nullable = true)
+    private Ong ong;
 
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 
@@ -78,14 +68,28 @@ public class Usuario implements UserDetails {
     }
 
     public Usuario(UsuarioRequest usuario) {
+
+        if (usuario.perfil() == null) {
+            throw new IllegalArgumentException(
+                    "Informe o perfil do usuário!"
+            );
+        }
+
+        if (!usuario.perfil().equals("C")
+                && !usuario.perfil().equals("U")) {
+            throw new IllegalArgumentException(
+                    "Perfil inválido! Informe C ou U."
+            );
+        }
+
         this.setCpf(new CPF(usuario.cpf()));
         this.setNome(usuario.nome());
         this.setSenha(usuario.senha());
         this.setEmail(usuario.email());
 
-        if(usuario.perfil().equals("C")){
+        if (usuario.perfil().equals("C")) {
             this.setRole("ROLE_COORDENADOR");
-        }else {
+        } else {
             this.setRole("ROLE_USER");
         }
     }

@@ -2,5 +2,9 @@ package com.example.solidaryaction.application.DTOs;
 //Transporta apenas os dados necessários para uma requisição/resposta
 //específica, evitando usar uma entidade completa quando não é preciso.
 
-public record LoginResponse(String token) {
+public record LoginResponse(
+        String token,
+        String role,
+        Long ongId
+) {
 }

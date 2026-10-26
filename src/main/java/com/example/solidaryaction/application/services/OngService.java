@@ -7,6 +7,9 @@ import com.example.solidaryaction.domain.valueobject.CNPJ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 
@@ -19,12 +22,42 @@ public class OngService {
     @Value("${spring.secret}")
     private String secret;
 
-    public List<OngResponse> listarTodasOngsTable(){
+    public UsuarioLogado getUsuarioLogado() {
+        return (UsuarioLogado) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+    }
 
-        return  ongRepository.findAll()
-                .stream()
-                .map(OngResponse::new)
-                .toList();
+    public List<OngResponse> listarTodasOngsTable() {
+
+        var usuarioLogado = getUsuarioLogado();
+
+        boolean administrador = usuarioLogado.authorities().contains(
+                new SimpleGrantedAuthority("ROLE_ADMIN")
+        );
+
+        if (administrador) {
+            return ongRepository.findAll()
+                    .stream()
+                    .map(OngResponse::new)
+                    .toList();
+        }
+
+        Long ongId = usuarioLogado.ong_id();
+
+        if (ongId == null) {
+            throw new AccessDeniedException(
+                    "Usuário sem vínculo com uma ONG!"
+            );
+        }
+
+        var ong = ongRepository.findById(ongId).orElse(null);
+
+        if (ong == null) {
+            return List.of();
+        }
+
+        return List.of(new OngResponse(ong));
     }
 
     public CriarOngAdminResponse criarOngAdmin(CriarOngAdminRequest criarOngAdminRequest) {
@@ -49,25 +82,74 @@ public class OngService {
             ongRepository.save(ongBanco);
 
             return new OngResponse(ongBanco);
-        }else {
+
+        } else {
+
+            var usuarioLogado = getUsuarioLogado();
+
+            boolean administrador = usuarioLogado.authorities().contains(
+                    new SimpleGrantedAuthority("ROLE_ADMIN")
+            );
+
+            if (!administrador) {
+
+                Long ongId = usuarioLogado.ong_id();
+
+                if (ongId == null) {
+                    throw new AccessDeniedException(
+                            "Usuário sem vínculo com uma ONG!"
+                    );
+                }
+
+                if (!ongId.equals(id)) {
+                    return null;
+                }
+            }
+
             Ong ongBanco = ongRepository.findById(id).orElse(null);
+
             if (ongBanco != null) {
                 ongBanco.setNomeFantasia(ong.nomeFantasia());
+                ongBanco.setRazaoSocial(ong.razaoSocial());
                 ongBanco.setCnpj(new CNPJ(ong.cnpj()));
                 ongBanco.setEmail(ong.email());
                 ongBanco.setEndereco(ong.endereco());
-                ongBanco.setTotalArrecadado(ong.totalArrecadado());
+
                 ongRepository.save(ongBanco);
+
                 return new OngResponse(ongBanco);
             }
         }
+
         return null;
     }
 
-    public OngResponse buscarPorId(Long id){
+    public OngResponse buscarPorId(Long id) {
+
+        var usuarioLogado = getUsuarioLogado();
+
+        boolean administrador = usuarioLogado.authorities().contains(
+                new SimpleGrantedAuthority("ROLE_ADMIN")
+        );
+
+        if (!administrador) {
+
+            Long ongId = usuarioLogado.ong_id();
+
+            if (ongId == null) {
+                throw new AccessDeniedException(
+                        "Usuário sem vínculo com uma ONG!"
+                );
+            }
+
+            if (!ongId.equals(id)) {
+                return null;
+            }
+        }
 
         var ong = ongRepository.findById(id).orElse(null);
-        if(ong == null){
+
+        if (ong == null) {
             return null;
         }
 
@@ -77,11 +159,13 @@ public class OngService {
     public boolean atualizarStatus(EnumStatusOng status, Long id) {
 
         Ong ongBanco = ongRepository.findById(id).orElse(null);
+
         if(ongBanco != null){
             ongBanco.setStatus(status);
             ongRepository.save(ongBanco);
             return true;
         }
+
         return false;
     }
 }

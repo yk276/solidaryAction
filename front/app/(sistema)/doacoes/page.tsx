@@ -5,143 +5,232 @@ import { Doacao } from "@/app/types/doacao";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+//Tela de listagem e gestão de doações.
 export default function Doacoes(){
 
-//Tela de listagem e gestão de doações. Busca os registros no backend, guarda a lista no estado
-//React e oferece ações de editar, excluir logicamente e alterar status.
+    const [doacoes, setDoacoes] = useState<Doacao[]>([]);
+    const [podeAlterar, setPodeAlterar] = useState(false);
 
-    const [doacoes,setDoacoes] = useState<Doacao[]>([]);
+    useEffect(() => {
+        const role = localStorage.getItem("role");
 
-    useEffect(()=>{
+        setPodeAlterar(
+            role === "ROLE_ADMIN" || role === "ROLE_COORDENADOR"
+        );
+
         carregarDados();
-    },[])
+    }, []);
 
-    //carregarDados faz o GET da coleção no backend e salva o resultado no estado usado pela tabela.
     const carregarDados = async () => {
-        try{
-            const dados = await axios.get<Doacao[]>("http://localhost:8080/doacoes");
+        try {
+            const dados = await axios.get<Doacao[]>(
+                "http://localhost:8080/doacoes"
+            );
 
             setDoacoes(dados.data);
-        } catch (error) {
-            alert("Erro ao carregar dados!")
-        }
-        
 
+        } catch (erro) {
+            alert("Erro ao carregar dados!");
+        }
     }
 
-    const handlerDeletarDoacao = async (doacao:Doacao) => {
+    const handlerDeletarDoacao = async (doacao: Doacao) => {
+        try {
+            await axios.delete(
+                'http://localhost:8080/doacoes/' + doacao.id + '/excluir'
+            );
 
-        var dadosRetorno =
-        await axios.delete<number>('http://localhost:8080/doacoes/'+doacao.id+'/excluir');
+            alert("Doação foi deletada com sucesso!");
 
-       if(dadosRetorno.status==200){
-        alert("Doacão foi deletada com sucesso!")
-        
-       }else {
-        alert(dadosRetorno.data);
+            carregarDados();
 
-        return;
-       }
-
-       carregarDados();
-
+        } catch (erro) {
+            alert("Não foi possível excluir a doação.");
+        }
     }
 
-    //A alteração de status monta o novo valor, envia um PATCH e recarrega os dados para refletir a mudança na tela.
-    const handlerAlterarStatusDoacao = async(doacao:Doacao) =>{
+    //O clique confirma uma doação pendente ou cancelada.
+    //Se estiver confirmada, o clique cancela a doação.
+    const handlerAlterarStatusDoacao = async (doacao: Doacao) => {
 
-
-        var novoStatus = {};
-        if(doacao.status ==="PENDENTE"){
-            novoStatus = {status:"BLOQUEADO"}
-        }else{
-            novoStatus = {status:"PENDENTE"}
-        }
-
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/doacoes/'+doacao.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atulizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
+        if (doacao.status === "EXCLUIDO") {
             return;
         }
 
-        carregarDados();
+        var novoStatus;
 
+        if (doacao.status === "CONFIRMADO") {
+            novoStatus = {status: "CANCELADO"};
+        } else {
+            novoStatus = {status: "CONFIRMADO"};
+        }
+
+        try {
+            const dadosRetorno = await axios.patch<Doacao>(
+                'http://localhost:8080/doacoes/' + doacao.id + '/status',
+                novoStatus
+            );
+
+            alert("Status atualizado com sucesso!");
+
+            if (
+                dadosRetorno.data.status === "CONFIRMADO" &&
+                dadosRetorno.data.metaAtingida
+            ) {
+                alert(dadosRetorno.data.mensagem);
+            }
+
+            carregarDados();
+
+        } catch (erro) {
+            if (axios.isAxiosError(erro)) {
+
+                if (erro.response?.status === 403) {
+                    alert("O servidor recusou a alteração (403). Confira o console do backend.");
+
+                } else if (erro.response?.status === 401) {
+                    alert("Autenticação inválida. Faça login novamente.");
+
+                } else if (erro.response?.status === 404) {
+                    alert("Doação não encontrada no acesso permitido.");
+
+                } else if (
+                    typeof erro.response?.data === "string"
+                ) {
+                    alert(erro.response.data);
+
+                } else {
+                    alert("Não foi possível alterar o status da doação.");
+                }
+
+            } else {
+                alert("Não foi possível alterar o status da doação.");
+            }
+        }
     }
-    
-    // O retorno JSX monta a tabela. O map percorre o array do estado e cria uma linha para cada registro, com ações de
-    //editar, excluir e alterar status.
+
     return (
         <div className="bg-purple-50 px-4 py-8 md:px-8">
 
-        <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-purple-800">Gestão de doações</h1>
-            <Link href="/doacoes/novo" className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700">Novo</Link>
-        </div>
+            <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
+                <h1 className="text-2xl md:text-3xl font-bold text-purple-800">
+                    Gestão de doações
+                </h1>
 
-        <div className="max-w-6xl mx-auto">
-            <div className="overflow-x-auto rounded-xl border border-purple-100 bg-white shadow-sm">
-                <table className="w-full text-left text-sm">
-                    <thead>
-                        <tr className="bg-purple-100 text-purple-800">
-                            <th className="px-4 py-3 font-semibold">Código</th>
-                            <th className="px-4 py-3 font-semibold">Data Doação</th>
-                            <th className="px-4 py-3 font-semibold">Valor Doado</th>
-                            <th className="px-4 py-3 font-semibold">Descrição</th>
-                            <th className="px-4 py-3 font-semibold">Status</th>
-                            <th className="px-4 py-3 font-semibold">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {doacoes.map((doacao)=> (
-                            <tr key={doacao.id} className="border-t border-purple-100 text-gray-700 hover:bg-purple-50">
-                                <td className="px-4 py-3 font-medium text-gray-900">
-                                    {doacao.id}
-                                </td>
-                                <td className="px-4 py-3">
-                                    {doacao.dataDoacao}
-                                </td>
-                                <td className="px-4 py-3">
-                                    {doacao.valorDoado}
-                                </td>
-                                <td className="px-4 py-3">
-                                    {doacao.descricao}
-                                </td>
-                                <td className="px-4 py-3">
-                                    {doacao.status}
-                                </td>
-                                <td className="px-4 py-3 flex gap-4">
-                                    <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
-                                    <Link href={`/doacoes/${doacao.id}/editar`}>Editar</Link>
-                                    </button>
-                                    <button onClick = {()=> handlerDeletarDoacao(doacao)}
-                                       className= "rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white font-medium transition-colors text-red-600 hover:text-red-800 ">
-                                        DELETAR</button>
-                                        <button onClick = {()=> handlerAlterarStatusDoacao(doacao)}
-                                       className= {`rounded-lg font-medium transition-colors ${doacao.status ==='BLOQUEADO'
-                                         ?'bg-orange-500 text-white px-4 py-2 text-sm font-semibold hover:text-orange-800' 
-                                         :'bg-green-500 text-white px-4 py-2 text-sm font-semibold hover:text-green-800' }`
-                                         }>{doacao.status}</button>
-                                </td>
+                {podeAlterar && (
+                    <Link
+                        href="/doacoes/novo"
+                        className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
+                    >
+                        Novo
+                    </Link>
+                )}
+            </div>
+
+            <div className="max-w-6xl mx-auto">
+                <div className="overflow-x-auto rounded-xl border border-purple-100 bg-white shadow-sm">
+                    <table className="w-full text-left text-sm">
+                        <thead>
+                            <tr className="bg-purple-100 text-purple-800">
+                                <th className="px-4 py-3 font-semibold">
+                                    Código
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Data Doação
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Valor Doado
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Descrição
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Status
+                                </th>
+                                <th className="px-4 py-3 font-semibold">
+                                    Ações
+                                </th>
                             </tr>
+                        </thead>
+
+                        <tbody>
+                            {doacoes.map((doacao) => (
+                                <tr
+                                    key={doacao.id}
+                                    className="border-t border-purple-100 text-gray-700 hover:bg-purple-50"
+                                >
+                                    <td className="px-4 py-3 font-medium text-gray-900">
+                                        {doacao.id}
+                                    </td>
+
+                                    <td className="px-4 py-3">
+                                        {doacao.dataDoacao}
+                                    </td>
+
+                                    <td className="px-4 py-3">
+                                        {doacao.valorDoado}
+                                    </td>
+
+                                    <td className="px-4 py-3">
+                                        {doacao.descricao}
+                                    </td>
+
+                                    <td className="px-4 py-3">
+                                        {doacao.status}
+                                    </td>
+
+                                    <td className="px-4 py-3">
+                                        {podeAlterar && doacao.status !== "EXCLUIDO" && (
+                                            <div className="flex gap-4">
+                                                <Link
+                                                    href={`/doacoes/${doacao.id}/editar`}
+                                                    className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"
+                                                >
+                                                    Editar
+                                                </Link>
+
+                                                <button
+                                                    onClick={() =>
+                                                        handlerDeletarDoacao(doacao)
+                                                    }
+                                                    className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
+                                                >
+                                                    DELETAR
+                                                </button>
+
+                                                <button
+                                                    onClick={() =>
+                                                        handlerAlterarStatusDoacao(doacao)
+                                                    }
+                                                    className={`rounded-lg px-4 py-2 text-sm font-semibold text-white ${
+                                                        doacao.status === "CONFIRMADO"
+                                                            ? "bg-orange-500 hover:bg-orange-600"
+                                                            : "bg-green-500 hover:bg-green-600"
+                                                    }`}
+                                                >
+                                                    {doacao.status}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
                             ))}
 
-                                {doacoes.length ===0 &&(
-                                    <tr>
-                                        <td colSpan={5} className= "px-6 py-12 text-center text-purple-800">
-                                            Nenhuma doacão encontrada
-                                        </td>
-                                    </tr>
-                                )}
-                    </tbody>
-                </table>
+                            {doacoes.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={6}
+                                        className="px-6 py-12 text-center text-purple-800"
+                                    >
+                                        Nenhuma doação encontrada
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-    </div>
-    )
+        </div>
+    );
 }
