@@ -1,7 +1,6 @@
 package com.example.solidaryaction.application.services;
 
 import com.example.solidaryaction.application.DTOs.*;
-import com.example.solidaryaction.application.DTOs.EnumStatusUsuario;
 import com.example.solidaryaction.domain.entities.Usuario;
 import com.example.solidaryaction.domain.repository.UsuarioRepository;
 import com.example.solidaryaction.domain.repository.OngRepository;
@@ -30,7 +29,8 @@ public class UsuarioService {
     @Autowired
     private OngRepository ongRepository;
 
-    public LoginResponse validarUsuarioAutenticadoRetornaToken(LoginRequest request) {
+    public LoginResponse validarUsuarioAutenticadoRetornaToken(
+            LoginRequest request) {
 
         var usuario = usuarioRepository
                 .findByEmailAndSenha(request.email(), request.senha())
@@ -68,7 +68,7 @@ public class UsuarioService {
         }
 
         if (usuarioLogado.ong_id() == null) {
-            throw new org.springframework.security.access.AccessDeniedException(
+            throw new AccessDeniedException(
                     "Usuário sem vínculo com uma ONG!"
             );
         }
@@ -79,7 +79,8 @@ public class UsuarioService {
                 .toList();
     }
 
-    public CriarAdminResponse criarAdmin(CriarAdminRequest criarAdminRequest) {
+    public CriarAdminResponse criarAdmin(
+            CriarAdminRequest criarAdminRequest) {
 
         if(!criarAdminRequest.secretKey().equals(secret)){
             return new CriarAdminResponse(0L, "Usuario salvo com sucesso!");
@@ -89,16 +90,22 @@ public class UsuarioService {
 
         usuarioRepository.save(usuarioAdminSalvar);
 
-        return new CriarAdminResponse(usuarioAdminSalvar.getId(), "Usuario salvo com sucesso!");
+        return new CriarAdminResponse(
+                usuarioAdminSalvar.getId(),
+                "Usuario salvo com sucesso!"
+        );
     }
 
-    public UsuarioLogado getUsuarioLogado(){
+    public UsuarioLogado getUsuarioLogado() {
         return (UsuarioLogado) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
     }
 
-    public UsuarioResponse criarCoordenador(Long ongId, UsuarioRequest usuario) {
+    //Mantém o cadastro pela rota /ongs/{ongId}/coordenadores.
+    public UsuarioResponse criarCoordenador(
+            Long ongId,
+            UsuarioRequest usuario) {
 
         var usuarioLogado = getUsuarioLogado();
 
@@ -108,8 +115,12 @@ public class UsuarioService {
 
         if (!administrador) {
             throw new AccessDeniedException(
-                    "Somente o administrador pode realizar este cadastro!"
+                    "Somente o administrador pode cadastrar coordenadores!"
             );
+        }
+
+        if (ongId == null) {
+            throw new IllegalArgumentException("Informe a ONG!");
         }
 
         var ong = ongRepository.findById(ongId).orElse(null);
@@ -133,19 +144,37 @@ public class UsuarioService {
         return new UsuarioResponse(coordenador);
     }
 
-    public UsuarioResponse salvarUsuario(UsuarioRequest usuario, Long id) {
+    public UsuarioResponse salvarUsuario(
+            UsuarioRequest usuario,
+            Long id) {
+
+        var usuarioLogado = getUsuarioLogado();
+
+        boolean administrador = usuarioLogado.authorities().contains(
+                new SimpleGrantedAuthority("ROLE_ADMIN")
+        );
+
+        boolean coordenador = usuarioLogado.authorities().contains(
+                new SimpleGrantedAuthority("ROLE_COORDENADOR")
+        );
+
+        if (!administrador && !coordenador) {
+            throw new AccessDeniedException(
+                    "Você não tem permissão para salvar usuários!"
+            );
+        }
 
         if (id == 0L) {
 
-            var usuarioLogado = getUsuarioLogado();
+            //O ADMIN cadastra coordenadores na ONG escolhida.
+            if (administrador) {
+                return criarCoordenador(usuario.ongId(), usuario);
+            }
 
-            boolean coordenador = usuarioLogado.authorities().contains(
-                    new SimpleGrantedAuthority("ROLE_COORDENADOR")
-            );
-
-            if (!coordenador) {
+            //O coordenador cadastra somente usuários comuns.
+            if (!"U".equals(usuario.perfil())) {
                 throw new AccessDeniedException(
-                        "O cadastro comum deve ser realizado por um coordenador!"
+                        "O coordenador pode cadastrar somente usuários comuns!"
                 );
             }
 
@@ -165,6 +194,7 @@ public class UsuarioService {
 
             Usuario usuarioBanco = new Usuario(usuario);
 
+            //Ignora a ONG enviada no request pelo coordenador.
             usuarioBanco.setOng(ong);
 
             usuarioRepository.save(usuarioBanco);
@@ -173,17 +203,12 @@ public class UsuarioService {
 
         } else {
 
-            var usuarioLogado = getUsuarioLogado();
-
-            boolean administrador = usuarioLogado.authorities().contains(
-                    new SimpleGrantedAuthority("ROLE_ADMIN")
-            );
-
             Usuario usuarioBanco;
 
             if (administrador) {
                 usuarioBanco = usuarioRepository.findById(id).orElse(null);
             } else {
+
                 Long ongId = usuarioLogado.ong_id();
 
                 if (ongId == null) {
@@ -197,41 +222,69 @@ public class UsuarioService {
                         .orElse(null);
             }
 
-            if (usuarioBanco != null) {
+            if (usuarioBanco == null) {
+                return null;
+            }
 
-                // O perfil ADMIN é preservado.
-                // Os demais usuários só podem receber C ou U.
-                if (!"ROLE_ADMIN".equals(usuarioBanco.getRole())) {
+            //O perfil ADMIN é preservado.
+            if (!"ROLE_ADMIN".equals(usuarioBanco.getRole())) {
 
-                    if (!"C".equals(usuario.perfil())
+                if (!"C".equals(usuario.perfil())
+                        && !"U".equals(usuario.perfil())) {
+
+                    throw new IllegalArgumentException(
+                            "Perfil inválido! Informe C ou U."
+                    );
+                }
+
+                //Somente o ADMIN pode mudar o perfil.
+                if (!administrador) {
+
+                    if ("ROLE_USER".equals(usuarioBanco.getRole())
                             && !"U".equals(usuario.perfil())) {
-                        throw new IllegalArgumentException(
-                                "Perfil inválido! Informe C ou U."
+
+                        throw new AccessDeniedException(
+                                "Somente o administrador pode atribuir o perfil Coordenador!"
+                        );
+                    }
+
+                    if ("ROLE_COORDENADOR".equals(usuarioBanco.getRole())
+                            && !"C".equals(usuario.perfil())) {
+
+                        throw new AccessDeniedException(
+                                "Somente o administrador pode alterar o perfil de um coordenador!"
                         );
                     }
                 }
-
-                usuarioBanco.setNome(usuario.nome());
-                usuarioBanco.setCpf(new CPF(usuario.cpf()));
-                usuarioBanco.setEmail(usuario.email());
-                usuarioBanco.setSenha(usuario.senha());
-
-                if (!"ROLE_ADMIN".equals(usuarioBanco.getRole())) {
-
-                    if ("C".equals(usuario.perfil())) {
-                        usuarioBanco.setRole("ROLE_COORDENADOR");
-                    } else {
-                        usuarioBanco.setRole("ROLE_USER");
-                    }
-                }
-
-                usuarioRepository.save(usuarioBanco);
-
-                return new UsuarioResponse(usuarioBanco);
             }
-        }
 
-        return null;
+            usuarioBanco.setNome(usuario.nome());
+            usuarioBanco.setCpf(new CPF(usuario.cpf()));
+            usuarioBanco.setEmail(usuario.email());
+
+            //Somente o ADMIN pode redefinir a senha pela edição.
+            //A edição feita pelo coordenador preserva a senha existente.
+            if (administrador
+                    && usuario.senha() != null
+                    && !usuario.senha().trim().isEmpty()) {
+                usuarioBanco.setSenha(usuario.senha());
+            }
+
+            if (administrador
+                    && !"ROLE_ADMIN".equals(usuarioBanco.getRole())) {
+
+                if ("C".equals(usuario.perfil())) {
+                    usuarioBanco.setRole("ROLE_COORDENADOR");
+                } else {
+                    usuarioBanco.setRole("ROLE_USER");
+                }
+            }
+
+            //A edição preserva o vínculo atual com a ONG.
+            usuarioRepository.save(usuarioBanco);
+
+            return new UsuarioResponse(usuarioBanco);
+        }
     }
 
     public UsuarioResponse buscarPorId(Long id) {
@@ -247,6 +300,7 @@ public class UsuarioService {
         if (administrador) {
             usuario = usuarioRepository.findById(id).orElse(null);
         } else {
+
             Long ongId = usuarioLogado.ong_id();
 
             if (ongId == null) {
@@ -280,6 +334,7 @@ public class UsuarioService {
         if (administrador) {
             usuarioBanco = usuarioRepository.findById(id).orElse(null);
         } else {
+
             Long ongId = usuarioLogado.ong_id();
 
             if (ongId == null) {
