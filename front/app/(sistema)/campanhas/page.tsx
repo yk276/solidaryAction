@@ -1,7 +1,11 @@
 'use client'
 
+import {
+    atualizarStatusCampanha,
+    buscarListaCampanhas,
+    deletarCampanha
+} from "@/app/services/campanhaService";
 import { Campanha } from "@/app/types/campanha";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -21,14 +25,12 @@ export default function Campanhas(){
         carregarDados();
     }, []);
 
-    //Busca as campanhas no backend e atualiza a tabela.
+    //Busca as campanhas pelo service e atualiza a tabela.
     const carregarDados = async () => {
         try {
-            const dados = await axios.get<Campanha[]>(
-                "http://localhost:8080/campanhas"
-            );
+            const dados = await buscarListaCampanhas();
 
-            setCampanhas(dados.data);
+            setCampanhas(dados);
 
         } catch (error) {
             alert("Erro ao carregar dados!");
@@ -37,42 +39,22 @@ export default function Campanhas(){
 
     const handlerDeletarCampanha = async (campanha: Campanha) => {
 
-        var dadosRetorno = await axios.delete<number>(
-            'http://localhost:8080/campanhas/' + campanha.id + '/excluir'
-        );
+        var dadosRetorno = await deletarCampanha(campanha.id || 0);
 
-        if (dadosRetorno.status == 200) {
+        if (dadosRetorno == 200) {
             alert("Campanha foi deletada com sucesso!");
         } else {
-            alert(dadosRetorno.data);
+            alert(dadosRetorno);
             return;
         }
 
         carregarDados();
     }
 
-    //Altera o status e recarrega os dados da tabela.
+    //O service altera o status e a página recarrega a tabela.
     const handlerAlterarStatusCampanha = async (campanha: Campanha) => {
 
-        var novoStatus = {};
-
-        if (campanha.status === "ATIVO") {
-            novoStatus = {status: "BLOQUEADO"};
-        } else {
-            novoStatus = {status: "ATIVO"};
-        }
-
-        var dadosRetorno = await axios.patch(
-            'http://localhost:8080/campanhas/' + campanha.id + '/status',
-            novoStatus
-        );
-
-        if (dadosRetorno.status == 200) {
-            alert("Status atualizado com sucesso!");
-        } else {
-            alert(dadosRetorno.data);
-            return;
-        }
+        await atualizarStatusCampanha(campanha);
 
         carregarDados();
     }
@@ -90,7 +72,7 @@ export default function Campanhas(){
                         href="/campanhas/novo"
                         className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
                     >
-                        Novo
+                        NOVO
                     </Link>
                 )}
             </div>
@@ -155,7 +137,7 @@ export default function Campanhas(){
                                             <div className="flex gap-4">
                                                 <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                                     <Link href={`/campanhas/${campanha.id}/editar`}>
-                                                        Editar
+                                                        EDITAR
                                                     </Link>
                                                 </button>
 

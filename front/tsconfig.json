@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "noImplicitAny": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

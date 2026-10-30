@@ -1,0 +1,21 @@
+spring.application.name=solidaryAction
+
+# Arquivo central de propriedades do backend. Configura nome da aplicação, conexão PostgreSQL,
+# comportamento do JPA/Hibernate e parâmetros usados para os tokens JWT.
+
+# Configura a conexão do Spring Boot com o banco de dados usado pelo projeto.
+spring.datasource.url=jdbc:postgresql://localhost:5432/solidaryaction
+spring.datasource.username=postgres
+spring.datasource.password=Sen@c2023
+spring.datasource.driver-class-name=org.postgresql.Driver
+hibernate.dialect=org.hibernate.dialect.HSQLDialect
+
+# As propriedades JPA/Hibernate controlam como as entidades são mapeadas e como o esquema do banco é tratado
+# durante a execução.
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# Configuração usada pelo mecanismo de JWT para assinar e validar os tokens.
+spring.expiracao = 120
+spring.secret = qhwdquq6ed78wesdll
+spring.emissor = "yohanna"

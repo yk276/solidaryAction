@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { Doacao } from "@/app/types/doacao";
-import axios from "axios";
+import {
+    atualizarStatusDoacao,
+    buscarListaDoacoes,
+    deletarDoacao
+} from "@/app/services/doacaoService";
 import { useEffect, useState } from "react";
 
 //Tela de listagem e gestão de doações.
@@ -21,13 +25,12 @@ export default function Doacoes(){
         carregarDados();
     }, []);
 
+    //Busca as doações pelo service e atualiza a tabela.
     const carregarDados = async () => {
         try {
-            const dados = await axios.get<Doacao[]>(
-                "http://localhost:8080/doacoes"
-            );
+            const dados = await buscarListaDoacoes();
 
-            setDoacoes(dados.data);
+            setDoacoes(dados);
 
         } catch (erro) {
             alert("Erro ao carregar dados!");
@@ -36,9 +39,7 @@ export default function Doacoes(){
 
     const handlerDeletarDoacao = async (doacao: Doacao) => {
         try {
-            await axios.delete(
-                'http://localhost:8080/doacoes/' + doacao.id + '/excluir'
-            );
+            await deletarDoacao(doacao.id || 0);
 
             alert("Doação foi deletada com sucesso!");
 
@@ -49,64 +50,16 @@ export default function Doacoes(){
         }
     }
 
-    //O clique confirma uma doação pendente ou cancelada.
-    //Se estiver confirmada, o clique cancela a doação.
+    //O service altera o status e apresenta o alerta de meta.
     const handlerAlterarStatusDoacao = async (doacao: Doacao) => {
 
         if (doacao.status === "EXCLUIDO") {
             return;
         }
 
-        var novoStatus;
+        await atualizarStatusDoacao(doacao);
 
-        if (doacao.status === "CONFIRMADO") {
-            novoStatus = {status: "CANCELADO"};
-        } else {
-            novoStatus = {status: "CONFIRMADO"};
-        }
-
-        try {
-            const dadosRetorno = await axios.patch<Doacao>(
-                'http://localhost:8080/doacoes/' + doacao.id + '/status',
-                novoStatus
-            );
-
-            alert("Status atualizado com sucesso!");
-
-            if (
-                dadosRetorno.data.status === "CONFIRMADO" &&
-                dadosRetorno.data.metaAtingida
-            ) {
-                alert(dadosRetorno.data.mensagem);
-            }
-
-            carregarDados();
-
-        } catch (erro) {
-            if (axios.isAxiosError(erro)) {
-
-                if (erro.response?.status === 403) {
-                    alert("O servidor recusou a alteração (403). Confira o console do backend.");
-
-                } else if (erro.response?.status === 401) {
-                    alert("Autenticação inválida. Faça login novamente.");
-
-                } else if (erro.response?.status === 404) {
-                    alert("Doação não encontrada no acesso permitido.");
-
-                } else if (
-                    typeof erro.response?.data === "string"
-                ) {
-                    alert(erro.response.data);
-
-                } else {
-                    alert("Não foi possível alterar o status da doação.");
-                }
-
-            } else {
-                alert("Não foi possível alterar o status da doação.");
-            }
-        }
+        carregarDados();
     }
 
     return (
@@ -122,7 +75,7 @@ export default function Doacoes(){
                         href="/doacoes/novo"
                         className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
                     >
-                        Novo
+                        NOVO
                     </Link>
                 )}
             </div>
@@ -186,7 +139,7 @@ export default function Doacoes(){
                                                     href={`/doacoes/${doacao.id}/editar`}
                                                     className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"
                                                 >
-                                                    Editar
+                                                    EDITAR
                                                 </Link>
 
                                                 <button

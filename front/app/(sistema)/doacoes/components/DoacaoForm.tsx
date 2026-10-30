@@ -1,19 +1,25 @@
 'use client'
 
 import { Doacao, DoacaoFormProps } from "@/app/types/doacao";
-import axios from "axios";
+import {
+    atualizarDoacao,
+    salvarDoacao,
+    tratarErroSalvarDoacao
+} from "@/app/services/doacaoService";
+import { buscarListaCampanhas } from "@/app/services/campanhaService";
+import { buscarListaDoadores } from "@/app/services/doadorService";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 //Dados necessários para preencher os selects.
 interface CampanhaOpcao {
-    id: number;
+    id: number | null;
     titulo: string;
 }
 
 interface DoadorOpcao {
-    id: number;
+    id: number | null;
     nome: string;
 }
 
@@ -34,19 +40,15 @@ export default function DoacaoForm({doacaoExistente}: DoacaoFormProps){
         carregarOpcoes();
     }, []);
 
-    //As consultas retornam os registros permitidos ao usuário logado.
+    //Consulta os services para preencher os selects.
     const carregarOpcoes = async () => {
         try {
-            const campanhasRetorno = await axios.get<CampanhaOpcao[]>(
-                "http://localhost:8080/campanhas"
-            );
+            const campanhasRetorno = await buscarListaCampanhas();
 
-            const doadoresRetorno = await axios.get<DoadorOpcao[]>(
-                "http://localhost:8080/doadores"
-            );
+            const doadoresRetorno = await buscarListaDoadores();
 
-            setCampanhas(campanhasRetorno.data);
-            setDoadores(doadoresRetorno.data);
+            setCampanhas(campanhasRetorno);
+            setDoadores(doadoresRetorno);
 
         } catch (erro) {
             alert("Não foi possível carregar as campanhas e os doadores.");
@@ -91,61 +93,29 @@ export default function DoacaoForm({doacaoExistente}: DoacaoFormProps){
             return;
         }
 
-        //Envia somente os campos definidos no DoacaoRequest.
-        const dados = {
-            dataDoacao: doacao.dataDoacao,
-            valorDoado: doacao.valorDoado,
-            descricao: doacao.descricao,
-            campanhaId: doacao.campanhaId,
-            doadorId: doacao.doadorId
-        };
-
         try {
             let resposta;
 
             if (doacaoExistente) {
-                resposta = await axios.put<Doacao>(
-                    'http://localhost:8080/doacoes/' + doacao.id,
-                    dados
-                );
+                resposta = await atualizarDoacao(doacao);
             } else {
-                resposta = await axios.post<Doacao>(
-                    'http://localhost:8080/doacoes/criar',
-                    dados
-                );
+                resposta = await salvarDoacao(doacao);
             }
 
             alert("Doação foi salva com sucesso!");
 
-            if (resposta.data.metaAtingida) {
-                alert(resposta.data.mensagem);
+            if (resposta.metaAtingida) {
+                alert(resposta.mensagem);
             }
 
             router.push("/doacoes");
 
         } catch (erro) {
-            if (axios.isAxiosError(erro)) {
-
-                if (erro.response?.status === 404) {
-                    alert("Campanha, doador ou doação não encontrados no acesso permitido.");
-
-                } else if (
-                    erro.response?.status === 400 &&
-                    typeof erro.response.data === "string"
-                ) {
-                    alert(erro.response.data);
-
-                } else {
-                    alert("Não foi possível salvar a doação. Verifique os dados e tente novamente.");
-                }
-
-            } else {
-                alert("Não foi possível salvar a doação.");
-            }
+            tratarErroSalvarDoacao(erro);
         }
     }
 
-    return(
+    return (
         <form
             action={handlerSalvar}
             className="max-w-2xl mx-auto bg-white rounded-xl border border-purple-100 shadow-sm p-6 md:p-8"
@@ -168,7 +138,10 @@ export default function DoacaoForm({doacaoExistente}: DoacaoFormProps){
                         <option value="">Selecione a campanha</option>
 
                         {campanhas.map((campanha) => (
-                            <option key={campanha.id} value={campanha.id}>
+                            <option
+                                key={campanha.id}
+                                value={campanha.id ?? ""}
+                            >
                                 {campanha.titulo}
                             </option>
                         ))}
@@ -191,7 +164,10 @@ export default function DoacaoForm({doacaoExistente}: DoacaoFormProps){
                         <option value="">Selecione o doador</option>
 
                         {doadores.map((doador) => (
-                            <option key={doador.id} value={doador.id}>
+                            <option
+                                key={doador.id}
+                                value={doador.id ?? ""}
+                            >
                                 {doador.nome}
                             </option>
                         ))}

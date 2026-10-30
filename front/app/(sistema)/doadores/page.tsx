@@ -1,8 +1,12 @@
 'use client'
 
 import Link from "next/link";
+import {
+    atualizarStatusDoador,
+    buscarListaDoadores,
+    deletarDoador
+} from "@/app/services/doadorService";
 import { Doador } from "@/app/types/doador";
-import axios from "axios";
 import { useEffect, useState } from "react";
 
 //Tela de listagem e gestão de doadores.
@@ -21,14 +25,12 @@ export default function Doadores(){
         carregarDados();
     }, []);
 
-    //Busca os doadores no backend e atualiza a tabela.
+    //Busca os doadores pelo service e atualiza a tabela.
     const carregarDados = async () => {
         try {
-            const dados = await axios.get<Doador[]>(
-                "http://localhost:8080/doadores"
-            );
+            const dados = await buscarListaDoadores();
 
-            setDoadores(dados.data);
+            setDoadores(dados);
 
         } catch (error) {
             alert("Erro ao carregar dados!");
@@ -37,42 +39,22 @@ export default function Doadores(){
 
     const handlerDeletarDoador = async (doador: Doador) => {
 
-        var dadosRetorno = await axios.delete<number>(
-            'http://localhost:8080/doadores/' + doador.id + '/excluir'
-        );
+        var dadosRetorno = await deletarDoador(doador.id || 0);
 
-        if (dadosRetorno.status == 200) {
+        if (dadosRetorno == 200) {
             alert("Doador foi deletado com sucesso!");
         } else {
-            alert(dadosRetorno.data);
+            alert(dadosRetorno);
             return;
         }
 
         carregarDados();
     }
 
-    //Altera o status e recarrega os dados da tabela.
+    //O service altera o status e a página recarrega a tabela.
     const handlerAlterarStatusDoador = async (doador: Doador) => {
 
-        var novoStatus = {};
-
-        if (doador.status === "ATIVO") {
-            novoStatus = {status: "BLOQUEADO"};
-        } else {
-            novoStatus = {status: "ATIVO"};
-        }
-
-        var dadosRetorno = await axios.patch(
-            'http://localhost:8080/doadores/' + doador.id + '/status',
-            novoStatus
-        );
-
-        if (dadosRetorno.status == 200) {
-            alert("Status atualizado com sucesso!");
-        } else {
-            alert(dadosRetorno.data);
-            return;
-        }
+        await atualizarStatusDoador(doador);
 
         carregarDados();
     }
@@ -90,7 +72,7 @@ export default function Doadores(){
                         href="/doadores/novo"
                         className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
                     >
-                        Novo
+                        NOVO
                     </Link>
                 )}
             </div>
@@ -145,7 +127,7 @@ export default function Doadores(){
                                             <div className="flex gap-4">
                                                 <button className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700">
                                                     <Link href={`/doadores/${doador.id}/editar`}>
-                                                        Editar
+                                                        EDITAR
                                                     </Link>
                                                 </button>
 
