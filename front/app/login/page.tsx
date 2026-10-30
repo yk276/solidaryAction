@@ -3,6 +3,8 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "../types/auth";
+import Cookies from "js-cookie"
+
 
 //Tela de login. Lê e-mail e senha do formulário, envia as credenciais ao endpoint de
 //autenticação e navega para a área interna quando o backend responde com sucesso.
@@ -27,7 +29,7 @@ export default function Login(){
             );
 
             if (loginResposta.status == 200) {
-
+                Cookies.set('token', loginResposta.data.token,{secure: true, expires: 7});
                 const token = loginResposta.data.token;
 
                 localStorage.setItem("token", token);

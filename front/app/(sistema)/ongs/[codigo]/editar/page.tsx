@@ -5,7 +5,7 @@ import OngForm from "../../components/OngForm";
 import { useParams, useRouter } from "next/navigation";
 import { Ong } from "@/app/types/ong";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { consultaOngPorId } from "@/app/services/ongService";
 
 //Página de edição de ONG. Lê o código da rota dinâmica, busca o registro correspondente no
 //backend e só depois entrega os dados ao formulário reutilizável para edição.
@@ -31,10 +31,10 @@ export default function EditarOng(){
     //contrário, redireciona o usuário.
     const buscarDados = async () =>{
 
-        const valorOngBack = await axios.get<Ong>('http://localhost:8080/ongs/'+codigo);
+        const valorOngBack = await consultaOngPorId(codigo);
 
-        if(valorOngBack.status==200){
-            setOng(valorOngBack.data)
+        if(valorOngBack){
+            setOng(valorOngBack)
         }else {
             router.push("/ongs")
         }

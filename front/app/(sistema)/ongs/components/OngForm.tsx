@@ -1,7 +1,7 @@
 'use client'
 
+import { atualizarOng, salvarOng } from "@/app/services/ongService";
 import { Ong, OngFormProps } from "@/app/types/ong";
-import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -45,24 +45,24 @@ export default function OngForm({ongExistente}:OngFormProps){
 
     
         if(ongExistente){
-            var dadosRetorno = await axios.put<number>('http://localhost:8080/ongs/'+ong.id,ong);
+            var dadosRetorno = await atualizarOng(ong);
     
-           if(dadosRetorno.status==200){
+           if(dadosRetorno){
             alert("Ong foi salva com sucesso!")
             
            }else {
-            alert(dadosRetorno.data);
+            alert("Erro ao salvar a ong!");
     
            }
     
         }else {
-           var dadosRetorno = await axios.post<number>('http://localhost:8080/ongs/criar',ong)
+           var dadosRetorno = await salvarOng(ong);
     
-           if(dadosRetorno.status==200){
+           if(dadosRetorno){
             alert("Ong foi salva com sucesso!")
             
            }else {
-            alert(dadosRetorno.data);
+            alert("Erro ao salvar a ong!");
     
            }
         }

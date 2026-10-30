@@ -1,7 +1,7 @@
 'use client'
 
+import { atualizarStatusUsuario, buscarListaUsuarios, deletarUsuario } from "@/app/services/usuarioService";
 import { Usuario } from "@/app/types/usuario";
-import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -19,9 +19,9 @@ export default function Usuarios(){
     //carregarDados faz o GET da coleção no backend e salva o resultado no estado usado pela tabela.
     const carregarDados = async () => {
         try{
-            const dados = await axios.get<Usuario[]>("http://localhost:8080/usuarios");
+            const dados = await buscarListaUsuarios();
 
-            setUsuarios(dados.data);
+            setUsuarios(dados);
         } catch (error) {
             alert("Erro ao carregar dados!")
         }
@@ -31,14 +31,13 @@ export default function Usuarios(){
 
     const handlerDeletarUsuario = async (usuario:Usuario) => {
 
-        var dadosRetorno =
-        await axios.delete<number>('http://localhost:8080/usuarios/'+usuario.id+'/excluir');
+        var dadosRetorno = await deletarUsuario(usuario.id||0);
 
-       if(dadosRetorno.status==200){
+       if(dadosRetorno==200){
         alert("Usuário foi deletado com sucesso!")
         
        }else {
-        alert(dadosRetorno.data);
+        alert(dadosRetorno);
 
         return;
        }
@@ -51,23 +50,7 @@ export default function Usuarios(){
     const handlerAlterarStatusUsuario = async(usuario:Usuario) =>{
 
 
-        var novoStatus = {};
-        if(usuario.status ==="ATIVO"){
-            novoStatus = {status:"BLOQUEADO"}
-        }else{
-            novoStatus = {status:"ATIVO"}
-        }
-
-        var dadosRetorno = await  
-        axios.patch('http://localhost:8080/usuarios/'+usuario.id+'/status',novoStatus);
-
-        if(dadosRetorno.status==200){
-            alert("Atulizado status com sucesso!");
-        }else{
-            alert(dadosRetorno.data);
-
-            return;
-        }
+        await atualizarStatusUsuario(usuario);
 
         carregarDados();
 
