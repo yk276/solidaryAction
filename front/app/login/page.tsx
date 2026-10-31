@@ -4,6 +4,9 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { LoginResponse } from "../types/auth";
 import Cookies from "js-cookie"
+import { useDispatch } from "react-redux";
+import { buscarUsuarioLogado } from "../services/usuarioService";
+import { login } from "../redux/slices/authSlice";
 
 
 //Tela de login. Lê e-mail e senha do formulário, envia as credenciais ao endpoint de
@@ -11,6 +14,7 @@ import Cookies from "js-cookie"
 
 export default function Login(){
     const router = useRouter();
+    const dispatch = useDispatch();
 
     //Realiza o login e guarda o token, o perfil e a ONG.
     const handleLogin = async (formData: FormData) => {
@@ -29,10 +33,15 @@ export default function Login(){
             );
 
             if (loginResposta.status == 200) {
+                
+                
                 Cookies.set('token', loginResposta.data.token,{secure: true, expires: 7});
                 const token = loginResposta.data.token;
 
+                var usuarioLogado = await buscarUsuarioLogado();
+                
                 localStorage.setItem("token", token);
+
 
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + token;
@@ -47,6 +56,13 @@ export default function Login(){
                 } else {
                     localStorage.removeItem("ongId");
                 }
+                
+                dispatch(login(
+                    {
+                        token:loginResposta.data.token,
+                        usuario:{...usuarioLogado}
+                    }
+                    ));
 
                 router.push("/home");
 

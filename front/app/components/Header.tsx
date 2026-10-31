@@ -1,7 +1,12 @@
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
+import { store } from "../redux/store";
 
 
 export default function Header(){
 
+    const usuario = store.getState().auth.usuario;
+    const dispatch = useDispatch();
 
     return(
         <header className="bg-white border-b border-purple-100 shadow-sm">
@@ -22,10 +27,15 @@ export default function Header(){
                         <circle/>
                     </svg>
                 </div>
-                <span className="font-medium">Usuário</span>
+                <span className="font-medium">{usuario?.nome.toLocaleUpperCase()||'Usuário não identificado'}</span>
             </div>
             <div>
-                <button className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100">Sair</button>
+                <button 
+                onClick={()=>{
+                    dispatch(logout());
+                }}
+                className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100">
+                    Sair</button>
             </div>
         </div>
     </header>

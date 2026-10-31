@@ -356,4 +356,17 @@ public class UsuarioService {
 
         return false;
     }
+
+    public UsuarioResponse buscarUsuarioLogado() {
+
+        try {
+            var usuarioLogado = getUsuarioLogado();
+            return usuarioRepository.findById(usuarioLogado.id())
+                    .stream()
+                    .map(UsuarioResponse::new).findFirst().orElse(null);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar usuario logado!");
+        }
+    }
 }
