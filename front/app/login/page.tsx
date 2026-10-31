@@ -7,6 +7,7 @@ import Cookies from "js-cookie"
 import { useDispatch } from "react-redux";
 import { buscarUsuarioLogado } from "../services/usuarioService";
 import { login } from "../redux/slices/authSlice";
+import { loginBack } from "../services/authService";
 
 
 //Tela de login. Lê e-mail e senha do formulário, envia as credenciais ao endpoint de
@@ -24,19 +25,11 @@ export default function Login(){
             const emailTela = formData.get("email")?.toString() ?? "";
             const senhaTela = formData.get("senha")?.toString() ?? "";
 
-            var loginResposta = await axios.post<LoginResponse>(
-                "http://localhost:8080/auth/login",
-                {
-                    email: emailTela,
-                    senha: senhaTela
-                }
-            );
+            var loginResposta = await loginBack(emailTela,senhaTela);
 
-            if (loginResposta.status == 200) {
-                
-                
-                Cookies.set('token', loginResposta.data.token,{secure: true, expires: 7});
-                const token = loginResposta.data.token;
+            if (loginResposta != null) {
+                Cookies.set('token', loginResposta.token,{secure: true, expires: 7});
+                const token = loginResposta.token;
 
                 var usuarioLogado = await buscarUsuarioLogado();
                 
@@ -46,12 +39,12 @@ export default function Login(){
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + token;
 
-                localStorage.setItem("role", loginResposta.data.role);
+                localStorage.setItem("role", loginResposta.role);
 
-                if (loginResposta.data.ongId != null) {
+                if (loginResposta.ongId != null) {
                     localStorage.setItem(
                         "ongId",
-                        loginResposta.data.ongId.toString()
+                        loginResposta.ongId.toString()
                     );
                 } else {
                     localStorage.removeItem("ongId");
@@ -59,7 +52,7 @@ export default function Login(){
                 
                 dispatch(login(
                     {
-                        token:loginResposta.data.token,
+                        token:loginResposta.token,
                         usuario:{...usuarioLogado}
                     }
                     ));

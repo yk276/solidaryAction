@@ -46,8 +46,8 @@ public class Campanha {
 
     public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ong_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "ong_id")
     private Ong ong;
 
     public boolean isMetaAtingida() {

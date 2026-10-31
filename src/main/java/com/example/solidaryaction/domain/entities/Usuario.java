@@ -46,8 +46,8 @@ public class Usuario implements UserDetails {
 
     private String role = "ROLE_USER";
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "ong_id", referencedColumnName = "id", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ong_id", referencedColumnName = "id")
     private Ong ong;
 
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;

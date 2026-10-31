@@ -12,7 +12,8 @@ export class Doador{
         public profissao:string,
         public endereco:string,
         public status:string,
-        public cpf:string
+        public cpf:string,
+        public ongId: number | null = null
     ){}
 }
 

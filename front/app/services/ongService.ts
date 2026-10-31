@@ -4,7 +4,7 @@ import api from "./api";
 export async function buscarListaOngs(): Promise<Ong[]> {
 
     const dados = await api.get<Ong[]>(
-        "http://localhost:8080/ongs"
+        "/ongs"
     );
 
     if (dados.status == 200) {
@@ -17,7 +17,7 @@ export async function buscarListaOngs(): Promise<Ong[]> {
 export async function deletarOng(id: number): Promise<number> {
 
     var dados = await api.delete(
-        'http://localhost:8080/ongs/' + id + '/excluir'
+        '/ongs/' + id + '/excluir'
     );
 
     return dados.status;
@@ -34,7 +34,7 @@ export async function atualizarStatusOng(ong: Ong): Promise<void> {
     }
 
     var dadosRetorno = await api.patch(
-        'http://localhost:8080/ongs/' + ong.id + '/status',
+        '/ongs/' + ong.id + '/status',
         novoStatus
     );
 
@@ -49,7 +49,7 @@ export async function atualizarStatusOng(ong: Ong): Promise<void> {
 export async function consultaOngPorId(id: number): Promise<Ong> {
 
     const valorOngBack = await api.get<Ong>(
-        'http://localhost:8080/ongs/' + id
+        '/ongs/' + id
     );
 
     return valorOngBack.data;
@@ -58,7 +58,7 @@ export async function consultaOngPorId(id: number): Promise<Ong> {
 export async function atualizarOng(ong: Ong): Promise<Ong> {
 
     var dadosRetorno = await api.put<Ong>(
-        'http://localhost:8080/ongs/' + ong.id,
+        '/ongs/' + ong.id,
         ong
     );
 
@@ -68,7 +68,7 @@ export async function atualizarOng(ong: Ong): Promise<Ong> {
 export async function salvarOng(ong: Ong): Promise<Ong> {
 
     var dadosRetorno = await api.post<Ong>(
-        'http://localhost:8080/ongs/criar',
+        '/ongs/criar',
         ong
     );
 

@@ -4,11 +4,19 @@ import { atualizarStatusOng, buscarListaOngs, deletarOng } from "@/app/services/
 import { Ong } from "@/app/types/ong";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../redux/store";
 
 //Tela de listagem e gestão de ONGs. Busca os registros no backend, guarda a lista no estado
 //React e oferece ações de editar, excluir logicamente e alterar status.
 
 export default function Ongs(){
+
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const administrador = usuarioLogado?role === "ROLE_ADMIN";
 
     const [ongs,setOngs] = useState<Ong[]>([]);
 

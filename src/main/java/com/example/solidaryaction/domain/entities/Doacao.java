@@ -39,12 +39,12 @@ public class Doacao {
 
     public EnumStatusDoacao status = EnumStatusDoacao.PENDENTE;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "campanha_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "campanha_id")
     private Campanha campanha;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "doador_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "doador_id")
     private Doador doador;
 
     public void setValorDoado(BigDecimal valorDoado) {
