@@ -40,6 +40,11 @@ public class UsuarioService {
             return null;
         }
 
+        //Somente usuários ativos podem efetuar login.
+        if (usuario.getStatus() != EnumStatusUsuario.ATIVO) {
+            return null;
+        }
+
         var token = tokenService.gerarToken(request);
 
         Long ongId = null;
