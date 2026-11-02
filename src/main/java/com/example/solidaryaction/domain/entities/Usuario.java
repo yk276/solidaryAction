@@ -1,8 +1,5 @@
 package com.example.solidaryaction.domain.entities;
 
-//Entidade JPA `Usuario`. Representa a estrutura persistida no banco e usa Lombok para gerar
-//automaticamente métodos e construtores, reduzindo código repetitivo.
-
 import com.example.solidaryaction.application.DTOs.CriarAdminRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusUsuario;
 import com.example.solidaryaction.application.DTOs.UsuarioLogado;
@@ -21,16 +18,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-//As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
-//como getters, setters e construtores.
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Usuario implements UserDetails {
 
-    //Este campo é a chave primária da entidade; @GeneratedValue deixa a geração do identificador a cargo do
-    //banco/JPA.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,16 +39,17 @@ public class Usuario implements UserDetails {
 
     private String role = "ROLE_USER";
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "ong_id", referencedColumnName = "id", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ong_id", referencedColumnName = "id")
     private Ong ong;
 
     private EnumStatusUsuario status = EnumStatusUsuario.ATIVO;
 
-    public void setEmail(String email){
-        if(!email.isEmpty() && !email.contains("@")){
+    public void setEmail(String email) {
+        if (!email.isEmpty() && !email.contains("@")) {
             throw new IllegalArgumentException("Email inválido!");
         }
+
         this.email = email;
     }
 
@@ -94,8 +88,10 @@ public class Usuario implements UserDetails {
         }
     }
 
-    public UsuarioLogado getUsuarioLogado(){
-        return (UsuarioLogado) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public UsuarioLogado getUsuarioLogado() {
+        return (UsuarioLogado) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 
     @Override

@@ -1,33 +1,25 @@
 package com.example.solidaryaction.domain.entities;
 
 import com.example.solidaryaction.application.DTOs.CampanhaRequest;
-import com.example.solidaryaction.application.DTOs.DoacaoRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusCampanha;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 import java.math.BigDecimal;
 
-//Entidade JPA `Campanha`. Representa a estrutura persistida no banco e usa Lombok para gerar
-//automaticamente métodos e construtores, reduzindo código repetitivo.
-
-//As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
-//como getters, setters e construtores.
 @Entity
-@Data //gera getters, setters e métodos utilitários;
-@NoArgsConstructor //permite criar o objeto vazio; (importante para o JPA)
-@AllArgsConstructor //permite criar o objeto já preenchendo todos os atributos.
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Campanha {
 
-    //Este campo é a chave primária da entidade; @GeneratedValue deixa a geração do identificador a cargo do
-    //banco/JPA.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -46,8 +38,8 @@ public class Campanha {
 
     public EnumStatusCampanha status = EnumStatusCampanha.RASCUNHO;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ong_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "ong_id")
     private Ong ong;
 
     public boolean isMetaAtingida() {

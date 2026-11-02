@@ -7,21 +7,22 @@ import {
     buscarListaDoacoes,
     deletarDoacao
 } from "@/app/services/doacaoService";
+import { RootState } from "../../redux/store";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 //Tela de listagem e gestão de doações.
 export default function Doacoes(){
 
     const [doacoes, setDoacoes] = useState<Doacao[]>([]);
-    const [podeAlterar, setPodeAlterar] = useState(false);
+
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const podeAlterar = usuarioLogado?.role === "ROLE_COORDENADOR";
 
     useEffect(() => {
-        const role = localStorage.getItem("role");
-
-        setPodeAlterar(
-            role === "ROLE_ADMIN" || role === "ROLE_COORDENADOR"
-        );
-
         carregarDados();
     }, []);
 
@@ -65,6 +66,15 @@ export default function Doacoes(){
     return (
         <div className="bg-purple-50 px-4 py-8 md:px-8">
 
+            <div className="max-w-6xl mx-auto mb-4">
+                <Link
+                    href="/home"
+                    className="inline-block rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"
+                >
+                    ← VOLTAR PARA A PÁGINA INICIAL
+                </Link>
+            </div>
+
             <div className="max-w-6xl mx-auto flex items-center justify-between mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-purple-800">
                     Gestão de doações
@@ -100,9 +110,12 @@ export default function Doacoes(){
                                 <th className="px-4 py-3 font-semibold">
                                     Status
                                 </th>
-                                <th className="px-4 py-3 font-semibold">
-                                    Ações
-                                </th>
+
+                                {podeAlterar && (
+                                    <th className="px-4 py-3 font-semibold">
+                                        Ações
+                                    </th>
+                                )}
                             </tr>
                         </thead>
 
@@ -132,47 +145,49 @@ export default function Doacoes(){
                                         {doacao.status}
                                     </td>
 
-                                    <td className="px-4 py-3">
-                                        {podeAlterar && doacao.status !== "EXCLUIDO" && (
-                                            <div className="flex gap-4">
-                                                <Link
-                                                    href={`/doacoes/${doacao.id}/editar`}
-                                                    className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"
-                                                >
-                                                    EDITAR
-                                                </Link>
+                                    {podeAlterar && (
+                                        <td className="px-4 py-3">
+                                            {doacao.status !== "EXCLUIDO" && (
+                                                <div className="flex gap-4">
+                                                    <Link
+                                                        href={`/doacoes/${doacao.id}/editar`}
+                                                        className="rounded-lg bg-purple-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-600 active:bg-purple-700"
+                                                    >
+                                                        EDITAR
+                                                    </Link>
 
-                                                <button
-                                                    onClick={() =>
-                                                        handlerDeletarDoacao(doacao)
-                                                    }
-                                                    className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
-                                                >
-                                                    DELETAR
-                                                </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handlerDeletarDoacao(doacao)
+                                                        }
+                                                        className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
+                                                    >
+                                                        DELETAR
+                                                    </button>
 
-                                                <button
-                                                    onClick={() =>
-                                                        handlerAlterarStatusDoacao(doacao)
-                                                    }
-                                                    className={`rounded-lg px-4 py-2 text-sm font-semibold text-white ${
-                                                        doacao.status === "CONFIRMADO"
-                                                            ? "bg-orange-500 hover:bg-orange-600"
-                                                            : "bg-green-500 hover:bg-green-600"
-                                                    }`}
-                                                >
-                                                    {doacao.status}
-                                                </button>
-                                            </div>
-                                        )}
-                                    </td>
+                                                    <button
+                                                        onClick={() =>
+                                                            handlerAlterarStatusDoacao(doacao)
+                                                        }
+                                                        className={`rounded-lg px-4 py-2 text-sm font-semibold text-white ${
+                                                            doacao.status === "CONFIRMADO"
+                                                                ? "bg-orange-500 hover:bg-orange-600"
+                                                                : "bg-green-500 hover:bg-green-600"
+                                                        }`}
+                                                    >
+                                                        {doacao.status}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
 
                             {doacoes.length === 0 && (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={podeAlterar ? 6 : 5}
                                         className="px-6 py-12 text-center text-purple-800"
                                     >
                                         Nenhuma doação encontrada

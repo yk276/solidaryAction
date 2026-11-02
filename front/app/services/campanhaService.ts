@@ -4,7 +4,7 @@ import api from "./api";
 export async function buscarListaCampanhas(): Promise<Campanha[]> {
 
     const dados = await api.get<Campanha[]>(
-        "http://localhost:8080/campanhas"
+        "/campanhas"
     );
 
     if (dados.status == 200) {
@@ -17,7 +17,7 @@ export async function buscarListaCampanhas(): Promise<Campanha[]> {
 export async function deletarCampanha(id: number): Promise<number> {
 
     var dados = await api.delete(
-        'http://localhost:8080/campanhas/' + id + '/excluir'
+        '/campanhas/' + id + '/excluir'
     );
 
     return dados.status;
@@ -36,7 +36,7 @@ export async function atualizarStatusCampanha(
     }
 
     var dadosRetorno = await api.patch(
-        'http://localhost:8080/campanhas/' + campanha.id + '/status',
+        '/campanhas/' + campanha.id + '/status',
         novoStatus
     );
 
@@ -53,7 +53,7 @@ export async function consultaCampanhaPorId(
 ): Promise<Campanha> {
 
     const valorCampanhaBack = await api.get<Campanha>(
-        'http://localhost:8080/campanhas/' + id
+        '/campanhas/' + id
     );
 
     return valorCampanhaBack.data;
@@ -64,8 +64,14 @@ export async function atualizarCampanha(
 ): Promise<number> {
 
     var dadosRetorno = await api.put<number>(
-        'http://localhost:8080/campanhas/' + campanha.id,
-        campanha
+        '/campanhas/' + campanha.id,
+        {
+            titulo: campanha.titulo,
+            descricao: campanha.descricao,
+            metaFinanceira: campanha.metaFinanceira,
+            dataInicio: campanha.dataInicio,
+            dataFim: campanha.dataFim
+        }
     );
 
     return dadosRetorno.data;
@@ -76,8 +82,14 @@ export async function salvarCampanha(
 ): Promise<number> {
 
     var dadosRetorno = await api.post<number>(
-        'http://localhost:8080/campanhas/criar',
-        campanha
+        '/campanhas/criar',
+        {
+            titulo: campanha.titulo,
+            descricao: campanha.descricao,
+            metaFinanceira: campanha.metaFinanceira,
+            dataInicio: campanha.dataInicio,
+            dataFim: campanha.dataFim
+        }
     );
 
     return dadosRetorno.data;

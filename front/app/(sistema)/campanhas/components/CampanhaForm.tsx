@@ -23,7 +23,7 @@ export default function CampanhaForm({campanhaExistente}: CampanhaFormProps){
     //Atualiza o campo escolhido, preservando os demais.
     const handlerChange = (
         campo: 'titulo' | 'descricao' | 'metaFinanceira'
-            | 'totalArrecadado' | 'dataInicio' | 'dataFim',
+            | 'dataInicio' | 'dataFim',
         valor: string
     ) => {
         setCampanha(valorAnterior =>
@@ -34,9 +34,7 @@ export default function CampanhaForm({campanhaExistente}: CampanhaFormProps){
                 campo === 'metaFinanceira'
                     ? Number(valor)
                     : valorAnterior.metaFinanceira,
-                campo === 'totalArrecadado'
-                    ? Number(valor)
-                    : valorAnterior.totalArrecadado,
+                valorAnterior.totalArrecadado,
                 campo === 'dataInicio' ? valor : valorAnterior.dataInicio,
                 campo === 'dataFim' ? valor : valorAnterior.dataFim,
                 valorAnterior.status
@@ -111,7 +109,7 @@ export default function CampanhaForm({campanhaExistente}: CampanhaFormProps){
                     </label>
                     <input
                         type="text"
-                        name="metaFinaneira"
+                        name="metaFinanceira"
                         value={campanha.metaFinanceira}
                         required
                         onChange={(e) =>
@@ -124,23 +122,7 @@ export default function CampanhaForm({campanhaExistente}: CampanhaFormProps){
 
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">
-                        Total Arrecadado:
-                    </label>
-                    <input
-                        name="totalArrecadado"
-                        value={campanha.totalArrecadado}
-                        required
-                        onChange={(e) =>
-                            handlerChange('totalArrecadado', e.target.value)
-                        }
-                        placeholder="Total Arrecadado"
-                        className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
-                    />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-gray-700">
-                        Data InÍcio:
+                        Data Início:
                     </label>
                     <input
                         name="dataInicio"
@@ -171,14 +153,14 @@ export default function CampanhaForm({campanhaExistente}: CampanhaFormProps){
                         href="/campanhas"
                         className="rounded-lg border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 active:bg-purple-100"
                     >
-                        Cancelar
+                        CANCELAR
                     </Link>
 
                     <button
                         type="submit"
                         className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-600 active:bg-green-700"
                     >
-                        Salvar
+                        SALVAR
                     </button>
                 </div>
             </div>

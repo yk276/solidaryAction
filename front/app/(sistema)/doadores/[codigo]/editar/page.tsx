@@ -4,34 +4,54 @@ import Link from "next/link";
 import DoadorForm from "../../components/DoadorForm";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
 import { Doador } from "@/app/types/doador";
 import { consultaDoadorPorId } from "@/app/services/doadorService";
 
-//Página de edição de doador. Consulta o registro pelo service
-//e entrega os dados ao formulário reutilizável.
+//Página de edição de doador.
 export default function EditarDoador(){
 
     const parametro = useParams();
-
     const codigo = Number(parametro.codigo);
 
     const [doador, setDoador] = useState<Doador | null>(null);
     const router = useRouter();
 
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const podeEditar = usuarioLogado?.role === "ROLE_COORDENADOR";
+
     useEffect(() => {
-        buscarDados();
-    }, []);
-
-    //Consulta o doador pelo código da URL e grava os dados no estado.
-    const buscarDados = async () => {
-
-        const valorDoadorBack = await consultaDoadorPorId(codigo);
-
-        if (valorDoadorBack) {
-            setDoador(valorDoadorBack);
-        } else {
+        if (!podeEditar) {
             router.push("/doadores");
+            return;
         }
+
+        //Consulta o doador somente quando o perfil permite editar.
+        const buscarDados = async () => {
+            try {
+                const valorDoadorBack = await consultaDoadorPorId(codigo);
+
+                if (valorDoadorBack) {
+                    setDoador(valorDoadorBack);
+                } else {
+                    router.push("/doadores");
+                }
+
+            } catch (error) {
+                alert("Não foi possível carregar o doador.");
+                router.push("/doadores");
+            }
+        }
+
+        buscarDados();
+    }, [podeEditar, codigo, router]);
+
+    if (!podeEditar) {
+        return null;
     }
 
     if (!doador) {
@@ -51,7 +71,7 @@ export default function EditarDoador(){
                             href="/doadores"
                             className="inline-block text-sm font-medium"
                         >
-                            &larr; Voltar para Listagem
+                            &larr; VOLTAR PARA LISTAGEM
                         </Link>
                     </button>
 

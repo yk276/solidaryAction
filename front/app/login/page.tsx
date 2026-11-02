@@ -2,67 +2,57 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { LoginResponse } from "../types/auth";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { buscarUsuarioLogado } from "../services/usuarioService";
 import { login } from "../redux/slices/authSlice";
+import { loginBack } from "../services/authService";
 
-
-//Tela de login. Lê e-mail e senha do formulário, envia as credenciais ao endpoint de
-//autenticação e navega para a área interna quando o backend responde com sucesso.
-
+//Tela de login.
 export default function Login(){
+
     const router = useRouter();
     const dispatch = useDispatch();
 
     //Realiza o login e guarda o token, o perfil e a ONG.
     const handleLogin = async (formData: FormData) => {
         try {
-            debugger;
-
             const emailTela = formData.get("email")?.toString() ?? "";
             const senhaTela = formData.get("senha")?.toString() ?? "";
 
-            var loginResposta = await axios.post<LoginResponse>(
-                "http://localhost:8080/auth/login",
-                {
-                    email: emailTela,
-                    senha: senhaTela
-                }
-            );
+            var loginResposta = await loginBack(emailTela, senhaTela);
 
-            if (loginResposta.status == 200) {
-                
-                
-                Cookies.set('token', loginResposta.data.token,{secure: true, expires: 7});
-                const token = loginResposta.data.token;
+            if (loginResposta != null) {
+                Cookies.set(
+                    'token',
+                    loginResposta.token,
+                    {secure: true, expires: 7}
+                );
+
+                const token = loginResposta.token;
 
                 var usuarioLogado = await buscarUsuarioLogado();
-                
-                localStorage.setItem("token", token);
 
+                localStorage.setItem("token", token);
 
                 axios.defaults.headers.common["Authorization"] =
                     "Bearer " + token;
 
-                localStorage.setItem("role", loginResposta.data.role);
+                localStorage.setItem("role", loginResposta.role);
 
-                if (loginResposta.data.ongId != null) {
+                if (loginResposta.ongId != null) {
                     localStorage.setItem(
                         "ongId",
-                        loginResposta.data.ongId.toString()
+                        loginResposta.ongId.toString()
                     );
                 } else {
                     localStorage.removeItem("ongId");
                 }
-                
-                dispatch(login(
-                    {
-                        token:loginResposta.data.token,
-                        usuario:{...usuarioLogado}
-                    }
-                    ));
+
+                dispatch(login({
+                    token: loginResposta.token,
+                    usuario: {...usuarioLogado}
+                }));
 
                 router.push("/home");
 
@@ -75,7 +65,7 @@ export default function Login(){
         }
     }
 
-    return(
+    return (
         <div className="min-h-screen flex items-center justify-center bg-purple-50 px-4">
             <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-purple-100 p-8">
                 <div>
@@ -84,7 +74,7 @@ export default function Login(){
                     </h1>
                 </div>
 
-                {/* O formulário entrega os dados à função handleLogin no cliente. */}
+                {/* O formulário entrega os dados à função handleLogin. */}
                 <form action={handleLogin} className="flex flex-col gap-4">
 
                     <div className="flex flex-col gap-1">
@@ -94,7 +84,8 @@ export default function Login(){
                         <input
                             name="email"
                             type="email"
-                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                        >
                         </input>
                     </div>
 
@@ -105,16 +96,17 @@ export default function Login(){
                         <input
                             name="senha"
                             type="password"
-                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200">
+                            className="w-full rounded-lg border border-purple-200 px-3 py-2 text-gray-900 placeholder-gray-400 outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-200"
+                        >
                         </input>
                     </div>
 
                     <button
                         type="submit"
-                        className="mt-2 w-full rounded-lg bg-purple-400 py-2.5 font-semibold text-white transition hover:bg-purple-400 active:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2">
-                        Entrar
+                        className="mt-2 w-full rounded-lg bg-purple-400 py-2.5 font-semibold text-white transition hover:bg-purple-400 active:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:ring-offset-2"
+                    >
+                        ENTRAR
                     </button>
-
                 </form>
             </div>
         </div>

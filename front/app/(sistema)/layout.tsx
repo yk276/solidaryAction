@@ -1,6 +1,5 @@
 'use client'
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -13,46 +12,52 @@ import { useSelector } from "react-redux";
 export default function SistemaLayout(
     {children}: {children: ReactNode}
 ){
-    const usuario = useSelector((state:RootState)=> state.auth.usuario);
-    
+    const [pronto, setPronto] = useState(false);
+
+    const usuario = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const token = useSelector(
+        (state: RootState) => state.auth.token
+    );
+
     const router = useRouter();
 
-    useEffect(()=>{
-        if(usuario == null){
-            router.push("/login");
-        }
-    })
-
-    const [autenticacaoPronta, setAutenticacaoPronta] = useState(false);
+    //Espera o componente carregar no navegador.
+    useEffect(() => {
+        setPronto(true);
+    }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-            delete axios.defaults.headers.common["Authorization"];
-            router.replace("/login");
+        if (!pronto) {
             return;
         }
 
-        axios.defaults.headers.common["Authorization"] =
-            "Bearer " + token;
+        if (usuario == null || !token) {
+            router.replace("/login");
+        }
+    }, [pronto, usuario, token, router]);
 
-        setAutenticacaoPronta(true);
-    }, [router]);
-
-    //Espera configurar o token antes de carregar as telas internas.
-    if (!autenticacaoPronta) {
+    if (!pronto) {
         return <p className="p-4">Carregando...</p>;
     }
 
-    return(
+    if (usuario == null || !token) {
+        return <p className="p-4">Redirecionando para o login...</p>;
+    }
+
+    return (
         <div className="flex min-h-screen bg-purple-50">
             <Sidebar/>
+
             <div className="flex flex-1 flex-col min-w-0">
                 <Header/>
+
                 <main className="flex-1 overflow-y-auto p-4 md:p-8">
                     {children}
                 </main>
+
                 <Footer/>
             </div>
         </div>

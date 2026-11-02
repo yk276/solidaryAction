@@ -1,50 +1,42 @@
 package com.example.solidaryaction.domain.entities;
 
-//Entidade JPA `Doador`. Representa a estrutura persistida no banco e usa Lombok para gerar
-//automaticamente métodos e construtores, reduzindo código repetitivo.
-
 import com.example.solidaryaction.application.DTOs.DoadorRequest;
 import com.example.solidaryaction.application.DTOs.EnumStatusDoador;
-import com.example.solidaryaction.application.DTOs.OngRequest;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
-//As anotações JPA transformam esta classe em uma entidade persistida no banco. O Lombok reduz código repetitivo,
-//como getters, setters e construtores.
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Doador {
 
-    //Este campo é a chave primária da entidade; @GeneratedValue deixa a geração do identificador a cargo do
-    //banco/JPA.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    public String nome;
+    private String nome;
 
-    public String cpf;
+    private String cpf;
 
-    public String email;
+    private String email;
 
-    public String profissao;
+    private String profissao;
 
-    public String endereco;
+    private String endereco;
 
-    public EnumStatusDoador status = EnumStatusDoador.ATIVO;
+    private EnumStatusDoador status = EnumStatusDoador.ATIVO;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "ong_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "ong_id", referencedColumnName = "id")
     private Ong ong;
+
+    @OneToMany(mappedBy = "doador")
+    private List<Doacao> doacao;
 
     public Doador(DoadorRequest doador) {
         this.setNome(doador.nome());

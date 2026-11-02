@@ -39,8 +39,15 @@ public class SecurityConfiguration {
                         )
                         .hasAnyRole("ADMIN", "COORDENADOR", "USER")
 
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/campanhas",
+                                "/campanhas/**"
+                        )
+                        .hasRole("COORDENADOR")
+
                         .requestMatchers("/campanhas", "/campanhas/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR")
+                        .hasRole("COORDENADOR")
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -50,7 +57,7 @@ public class SecurityConfiguration {
                         .hasAnyRole("ADMIN", "COORDENADOR", "USER")
 
                         .requestMatchers("/doadores", "/doadores/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR")
+                        .hasRole("COORDENADOR")
 
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -60,7 +67,7 @@ public class SecurityConfiguration {
                         .hasAnyRole("ADMIN", "COORDENADOR", "USER")
 
                         .requestMatchers("/doacoes", "/doacoes/**")
-                        .hasAnyRole("ADMIN", "COORDENADOR")
+                        .hasRole("COORDENADOR")
 
                         .requestMatchers(HttpMethod.POST, "/usuarios/admin")
                         .permitAll()

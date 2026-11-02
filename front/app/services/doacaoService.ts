@@ -5,7 +5,7 @@ import api from "./api";
 export async function buscarListaDoacoes(): Promise<Doacao[]> {
 
     const dados = await api.get<Doacao[]>(
-        "http://localhost:8080/doacoes"
+        "/doacoes"
     );
 
     if (dados.status == 200) {
@@ -18,7 +18,7 @@ export async function buscarListaDoacoes(): Promise<Doacao[]> {
 export async function deletarDoacao(id: number): Promise<number> {
 
     var dados = await api.delete(
-        'http://localhost:8080/doacoes/' + id + '/excluir'
+        '/doacoes/' + id + '/excluir'
     );
 
     return dados.status;
@@ -42,7 +42,7 @@ export async function atualizarStatusDoacao(
 
     try {
         const dadosRetorno = await api.patch<Doacao>(
-            'http://localhost:8080/doacoes/' + doacao.id + '/status',
+            '/doacoes/' + doacao.id + '/status',
             novoStatus
         );
 
@@ -85,7 +85,7 @@ export async function consultaDoacaoPorId(
 ): Promise<Doacao> {
 
     const valorDoacaoBack = await api.get<Doacao>(
-        'http://localhost:8080/doacoes/' + id
+        '/doacoes/' + id
     );
 
     return valorDoacaoBack.data;
@@ -104,7 +104,7 @@ export async function atualizarDoacao(
     };
 
     var dadosRetorno = await api.put<Doacao>(
-        'http://localhost:8080/doacoes/' + doacao.id,
+        '/doacoes/' + doacao.id,
         dados
     );
 
@@ -124,7 +124,7 @@ export async function salvarDoacao(
     };
 
     var dadosRetorno = await api.post<Doacao>(
-        'http://localhost:8080/doacoes/criar',
+        '/doacoes/criar',
         dados
     );
 

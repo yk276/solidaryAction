@@ -1,13 +1,13 @@
-
-
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../redux/slices/authSlice"
+import authReducer from "./slices/authSlice";
+import favoritosReducer from "./slices/favoritosSlice";
 
 export const store = configureStore({
-    reducer:{
-        auth : authReducer
+    reducer: {
+        auth: authReducer,
+        favoritos: favoritosReducer
     }
 });
 
-export type RootState = ReturnType<typeof store.getState >;
+export type RootState = ReturnType<typeof store.getState>;
 export type AppDispath = typeof store.dispatch;

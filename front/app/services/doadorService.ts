@@ -4,7 +4,7 @@ import api from "./api";
 export async function buscarListaDoadores(): Promise<Doador[]> {
 
     const dados = await api.get<Doador[]>(
-        "http://localhost:8080/doadores"
+        "/doadores"
     );
 
     if (dados.status == 200) {
@@ -17,7 +17,7 @@ export async function buscarListaDoadores(): Promise<Doador[]> {
 export async function deletarDoador(id: number): Promise<number> {
 
     var dados = await api.delete(
-        'http://localhost:8080/doadores/' + id + '/excluir'
+        '/doadores/' + id + '/excluir'
     );
 
     return dados.status;
@@ -36,7 +36,7 @@ export async function atualizarStatusDoador(
     }
 
     var dadosRetorno = await api.patch(
-        'http://localhost:8080/doadores/' + doador.id + '/status',
+        '/doadores/' + doador.id + '/status',
         novoStatus
     );
 
@@ -53,7 +53,7 @@ export async function consultaDoadorPorId(
 ): Promise<Doador> {
 
     const valorDoadorBack = await api.get<Doador>(
-        'http://localhost:8080/doadores/' + id
+        '/doadores/' + id
     );
 
     return valorDoadorBack.data;
@@ -64,7 +64,7 @@ export async function atualizarDoador(
 ): Promise<number> {
 
     var dadosRetorno = await api.put<number>(
-        'http://localhost:8080/doadores/' + doador.id,
+        '/doadores/' + doador.id,
         doador
     );
 
@@ -76,7 +76,7 @@ export async function salvarDoador(
 ): Promise<number> {
 
     var dadosRetorno = await api.post<number>(
-        'http://localhost:8080/doadores/criar',
+        '/doadores/criar',
         doador
     );
 

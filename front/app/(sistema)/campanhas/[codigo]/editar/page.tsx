@@ -4,34 +4,54 @@ import Link from "next/link";
 import CampanhaForm from "../../components/CampanhaForm";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
 import { Campanha } from "@/app/types/campanha";
 import { consultaCampanhaPorId } from "@/app/services/campanhaService";
 
-//Página de edição de campanhas. Consulta o registro pelo service
-//e reaproveita o formulário com os dados existentes.
+//Página de edição de campanhas.
 export default function EditarCampanha(){
 
     const parametro = useParams();
-
     const codigo = Number(parametro.codigo);
 
     const [campanha, setCampanha] = useState<Campanha | null>(null);
     const router = useRouter();
 
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const podeEditar = usuarioLogado?.role === "ROLE_COORDENADOR";
+
     useEffect(() => {
-        buscarDados();
-    }, []);
-
-    //Consulta a campanha pelo código da URL e grava os dados no estado.
-    const buscarDados = async () => {
-
-        const valorCampanhaBack = await consultaCampanhaPorId(codigo);
-
-        if (valorCampanhaBack) {
-            setCampanha(valorCampanhaBack);
-        } else {
+        if (!podeEditar) {
             router.push("/campanhas");
+            return;
         }
+
+        //Consulta a campanha somente quando o perfil permite editar.
+        const buscarDados = async () => {
+            try {
+                const valorCampanhaBack = await consultaCampanhaPorId(codigo);
+
+                if (valorCampanhaBack) {
+                    setCampanha(valorCampanhaBack);
+                } else {
+                    router.push("/campanhas");
+                }
+
+            } catch (error) {
+                alert("Não foi possível carregar a campanha.");
+                router.push("/campanhas");
+            }
+        }
+
+        buscarDados();
+    }, [podeEditar, codigo, router]);
+
+    if (!podeEditar) {
+        return null;
     }
 
     if (!campanha) {
@@ -51,7 +71,7 @@ export default function EditarCampanha(){
                             href="/campanhas"
                             className="inline-block text-sm font-medium"
                         >
-                            &larr; Voltar para Listagem
+                            &larr; VOLTAR PARA LISTAGEM
                         </Link>
                     </button>
 
