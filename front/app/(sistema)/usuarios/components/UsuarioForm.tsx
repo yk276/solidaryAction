@@ -7,18 +7,24 @@ import {
 import { buscarListaOngs } from "@/app/services/ongService";
 import { Usuario, UsuarioFormProps } from "@/app/types/usuario";
 import { Ong } from "@/app/types/ong";
+import type { RootState } from "@/app/redux/store";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function UsuarioForm({usuarioExistente}: UsuarioFormProps){
 
     const router = useRouter();
 
-    const [roleLogado, setRoleLogado] = useState("");
+    //Consulta no Redux os dados do usuário autenticado.
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
     const [ongs, setOngs] = useState<Ong[]>([]);
 
-    const administrador = roleLogado === "ROLE_ADMIN";
+    const administrador = usuarioLogado?.role === "ROLE_ADMIN";
     const registroAdmin = usuarioExistente?.role === "ROLE_ADMIN";
 
     const [usuario, setUsuario] = useState<Usuario>(
@@ -34,15 +40,19 @@ export default function UsuarioForm({usuarioExistente}: UsuarioFormProps){
                 usuarioExistente.role,
                 usuarioExistente.ongId
             )
-            : new Usuario(null, "", "", "ATIVO", "", "", "U")
+            : new Usuario(
+                null,
+                "",
+                "",
+                "ATIVO",
+                "",
+                "",
+                administrador ? "C" : "U"
+            )
     );
 
     useEffect(() => {
-        const role = localStorage.getItem("role") ?? "";
-
-        setRoleLogado(role);
-
-        if (role === "ROLE_ADMIN" && !usuarioExistente) {
+        if (administrador && !usuarioExistente) {
 
             //O novo cadastro realizado pelo ADMIN é de Coordenador.
             setUsuario(valorAnterior =>
@@ -61,7 +71,7 @@ export default function UsuarioForm({usuarioExistente}: UsuarioFormProps){
 
             carregarOngs();
         }
-    }, []);
+    }, [administrador, usuarioExistente]);
 
     const carregarOngs = async () => {
         try {
@@ -130,8 +140,8 @@ export default function UsuarioForm({usuarioExistente}: UsuarioFormProps){
         router.push("/usuarios");
     }
 
-    //Aguarda a identificação do perfil antes de exibir o formulário.
-    if (roleLogado === "") {
+    //Aguarda os dados do usuário autenticado.
+    if (!usuarioLogado) {
         return (
             <div className="p-8">
                 Carregando Dados...

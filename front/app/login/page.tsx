@@ -1,6 +1,5 @@
 'use client'
 
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
@@ -14,7 +13,7 @@ export default function Login(){
     const router = useRouter();
     const dispatch = useDispatch();
 
-    //Realiza o login e guarda o token, o perfil e a ONG.
+    //Realiza o login e guarda os dados da autenticação no Redux.
     const handleLogin = async (formData: FormData) => {
         try {
             const emailTela = formData.get("email")?.toString() ?? "";
@@ -23,31 +22,15 @@ export default function Login(){
             var loginResposta = await loginBack(emailTela, senhaTela);
 
             if (loginResposta != null) {
+
+                //O interceptor utiliza esse token para consultar o usuário.
                 Cookies.set(
                     'token',
                     loginResposta.token,
                     {secure: true, expires: 7}
                 );
 
-                const token = loginResposta.token;
-
                 var usuarioLogado = await buscarUsuarioLogado();
-
-                localStorage.setItem("token", token);
-
-                axios.defaults.headers.common["Authorization"] =
-                    "Bearer " + token;
-
-                localStorage.setItem("role", loginResposta.role);
-
-                if (loginResposta.ongId != null) {
-                    localStorage.setItem(
-                        "ongId",
-                        loginResposta.ongId.toString()
-                    );
-                } else {
-                    localStorage.removeItem("ongId");
-                }
 
                 dispatch(login({
                     token: loginResposta.token,

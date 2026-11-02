@@ -8,6 +8,7 @@ public record DoadorResponse(
         String cpf,
         String email,
         String profissao,
+        String endereco,
         EnumStatusDoador status,
         Long ongId
 ) {
@@ -21,6 +22,7 @@ public record DoadorResponse(
                         : null,
                 doadorEntidade.getEmail(),
                 doadorEntidade.getProfissao(),
+                doadorEntidade.getEndereco(),
                 doadorEntidade.getStatus(),
                 doadorEntidade.getOng() != null
                         ? doadorEntidade.getOng().getId()
