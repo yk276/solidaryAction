@@ -15,7 +15,7 @@ export async function loginBack(
     );
 
     if (loginResposta.status != 200) {
-        alert("Login ou senha inválido!");
+        alert("Login ou senha inválidos!");
     }
 
     return loginResposta.data;
