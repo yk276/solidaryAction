@@ -1,4 +1,4 @@
-package com.example.solidaryaction.infra.external.configuration;
+package com.example.solidaryaction.infra.configuration;
 
 
 import io.swagger.v3.oas.models.Components;

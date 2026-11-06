@@ -1,4 +1,4 @@
-package com.example.solidaryaction.infra.external.configuration;
+package com.example.solidaryaction.infra.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

@@ -1,4 +1,4 @@
-package com.example.solidaryaction.infra.external.configuration;
+package com.example.solidaryaction.infra.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
