@@ -1,6 +1,18 @@
-import Link from "next/link";
+'use client'
 
-export default function Sidebar(){
+import Link from "next/link";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+
+export default function Sidebar() {
+
+    const usuarioLogado = useSelector(
+        (state: RootState) => state.auth.usuario
+    );
+
+    const podeVerUsuarios =
+        usuarioLogado?.role === "ROLE_ADMIN" ||
+        usuarioLogado?.role === "ROLE_COORDENADOR";
 
     return (
         <aside className="w-64 shrink-0 bg-white border-r border-purple-100 min-h-screen flex flex-col">
@@ -16,12 +28,14 @@ export default function Sidebar(){
                     Home
                 </Link>
 
-                <Link
-                    href="/usuarios"
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700"
-                >
-                    Usuários
-                </Link>
+                {podeVerUsuarios && (
+                    <Link
+                        href="/usuarios"
+                        className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-green-50 hover:text-green-700"
+                    >
+                        Usuários
+                    </Link>
+                )}
 
                 <Link
                     href="/favoritos"

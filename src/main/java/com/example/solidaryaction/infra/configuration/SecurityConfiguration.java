@@ -76,16 +76,21 @@ public class SecurityConfiguration {
                         .requestMatchers("/doacoes", "/doacoes/**")
                         .hasRole("COORDENADOR")
 
-                        .requestMatchers(HttpMethod.POST, "/usuarios/admin")
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/usuarios/admin"
+                        )
                         .permitAll()
 
+                        //Todos os perfis podem consultar a própria conta.
+                        //Esta regra precisa vir antes de /usuarios/**.
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/usuarios",
-                                "/usuarios/**"
+                                "/usuarios/buscarusuariologado"
                         )
                         .hasAnyRole("ADMIN", "COORDENADOR", "USER")
 
+                        //A gestão de usuários fica restrita a estes perfis.
                         .requestMatchers("/usuarios", "/usuarios/**")
                         .hasAnyRole("ADMIN", "COORDENADOR")
 
