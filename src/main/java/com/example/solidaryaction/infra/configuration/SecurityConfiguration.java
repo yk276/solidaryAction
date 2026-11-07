@@ -32,6 +32,13 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        //O cadastro do desktop valida a chave no service.
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/ongs/cadastro-com-coordenador"
+                        )
+                        .permitAll()
+
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/campanhas",

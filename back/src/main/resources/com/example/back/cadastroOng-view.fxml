@@ -3,54 +3,76 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0"
+<AnchorPane prefHeight="460.0" prefWidth="650.0"
             xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.back.OngController">
+
     <children>
-        <Button layoutX="40.0" layoutY="324.0"
+
+        <Label layoutX="40.0" layoutY="65.0"
+               text="Nome fantasia:" />
+        <TextField fx:id="txtNomeFantasia"
+                   layoutX="40.0" layoutY="88.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="40.0" layoutY="125.0"
+               text="Razão social:" />
+        <TextField fx:id="txtRazaoSocial"
+                   layoutX="40.0" layoutY="148.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="40.0" layoutY="185.0"
+               text="CNPJ:" />
+        <TextField fx:id="txtCnpj"
+                   layoutX="40.0" layoutY="208.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="40.0" layoutY="245.0"
+               text="Email da ONG:" />
+        <TextField fx:id="txtEmail"
+                   layoutX="40.0" layoutY="268.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="40.0" layoutY="305.0"
+               text="Endereço:" />
+        <TextField fx:id="txtEndereco"
+                   layoutX="40.0" layoutY="328.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="350.0" layoutY="65.0"
+               text="Nome completo:" />
+        <TextField fx:id="txtNomeCoordenador"
+                   layoutX="350.0" layoutY="88.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="350.0" layoutY="125.0"
+               text="CPF:" />
+        <TextField fx:id="txtCpfCoordenador"
+                   layoutX="350.0" layoutY="148.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="350.0" layoutY="185.0"
+               text="Email do coordenador:" />
+        <TextField fx:id="txtEmailCoordenador"
+                   layoutX="350.0" layoutY="208.0"
+                   prefWidth="250.0" />
+
+        <Label layoutX="350.0" layoutY="245.0"
+               text="Senha do coordenador:" />
+        <PasswordField fx:id="txtSenhaCoordenador"
+                       layoutX="350.0" layoutY="268.0"
+                       prefWidth="250.0" />
+
+        <Button layoutX="40.0" layoutY="405.0"
                 mnemonicParsing="false"
                 onAction="#onVoltarAoMenu"
                 text="Voltar" />
 
-        <Button layoutX="452.0" layoutY="324.0"
+        <Button layoutX="540.0" layoutY="405.0"
                 mnemonicParsing="false"
                 onAction="#salvarOng"
                 text="Salvar" />
 
-        <Label layoutX="122.0" layoutY="28.0"
-               text="Nome fantasia:" />
-        <TextField fx:id="txtNomeFantasia"
-                   layoutX="118.0" layoutY="56.0" />
-
-        <Label layoutX="122.0" layoutY="94.0"
-               text="Razão social:" />
-        <TextField fx:id="txtRazaoSocial"
-                   layoutX="118.0" layoutY="119.0" />
-
-        <Label layoutX="116.0" layoutY="161.0"
-               text="CNPJ:" />
-        <TextField fx:id="txtCnpj"
-                   layoutX="116.0" layoutY="188.0" />
-
-        <Label layoutX="116.0" layoutY="230.0"
-               text="Email:" />
-        <TextField fx:id="txtEmail"
-                   layoutX="116.0" layoutY="256.0" />
-
-        <Label layoutX="336.0" layoutY="28.0"
-               text="Endereço:" />
-        <TextField fx:id="txtEndereco"
-                   layoutX="336.0" layoutY="56.0" />
-
-        <Label layoutX="336.0" layoutY="94.0"
-               text="Email do administrador:" />
-        <TextField fx:id="txtEmailAdmin"
-                   layoutX="336.0" layoutY="119.0" />
-
-        <Label layoutX="336.0" layoutY="161.0"
-               text="Senha do administrador:" />
-        <PasswordField fx:id="txtSenhaAdmin"
-                       layoutX="336.0" layoutY="188.0" />
     </children>
 </AnchorPane>

@@ -12,13 +12,12 @@ import javafx.stage.Stage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class OngController {
 
@@ -38,189 +37,156 @@ public class OngController {
     private TextField txtEndereco;
 
     @FXML
-    private TextField txtEmailAdmin;
+    private TextField txtNomeCoordenador;
 
     @FXML
-    private PasswordField txtSenhaAdmin;
+    private TextField txtCpfCoordenador;
 
     @FXML
-    public void salvarOng(ActionEvent event) throws Exception {
+    private TextField txtEmailCoordenador;
 
-        if (txtEmailAdmin.getText().trim().isEmpty()
-                || txtSenhaAdmin.getText().trim().isEmpty()) {
+    @FXML
+    private PasswordField txtSenhaCoordenador;
+
+    private String mensagemErroApi = "";
+
+    //Envia o cadastro da ONG e de seu novo coordenador.
+    @FXML
+    public void salvarOng(ActionEvent event) {
+
+        if (txtNomeFantasia.getText().trim().isEmpty()
+                || txtRazaoSocial.getText().trim().isEmpty()
+                || txtCnpj.getText().trim().isEmpty()
+                || txtEmail.getText().trim().isEmpty()
+                || txtEndereco.getText().trim().isEmpty()
+                || txtNomeCoordenador.getText().trim().isEmpty()
+                || txtCpfCoordenador.getText().trim().isEmpty()
+                || txtEmailCoordenador.getText().trim().isEmpty()
+                || txtSenhaCoordenador.getText().trim().isEmpty()) {
 
             showMessage(
                     Alert.AlertType.ERROR,
-                    "Informe o email e a senha do administrador!"
+                    "Preencha todos os campos!"
             );
             return;
         }
 
-        String token = autenticarAdministrador();
-
-        if (token == null) {
-            return;
-        }
-
-        String jsonRequest = String.format(
-                "{\n" +
-                        "  \"nomeFantasia\": \"%s\",\n" +
-                        "  \"razaoSocial\": \"%s\",\n" +
-                        "  \"cnpj\": \"%s\",\n" +
-                        "  \"email\": \"%s\",\n" +
-                        "  \"endereco\": \"%s\",\n" +
-                        "  \"secretKey\": \"%s\"\n" +
-                        "}",
-                prepararTextoJson(txtNomeFantasia.getText()),
-                prepararTextoJson(txtRazaoSocial.getText()),
-                prepararTextoJson(txtCnpj.getText()),
-                prepararTextoJson(txtEmail.getText()),
-                prepararTextoJson(txtEndereco.getText()),
-                "qhwdquq6ed78wesdll"
-        );
-
-        int respostaApi = executaMetodoAPI(
-                "http://localhost:8080/ongs/admin",
-                jsonRequest,
-                "POST",
-                token
-        );
-
-        System.out.println("Status ao salvar ONG: " + respostaApi);
-
-        if (respostaApi == 200) {
-            showMessage(
-                    Alert.AlertType.INFORMATION,
-                    "Ong salva com sucesso!"
-            );
-            onVoltarAoMenu(event);
-
-        } else if (respostaApi == 403) {
-            showMessage(
-                    Alert.AlertType.ERROR,
-                    "Somente o administrador pode cadastrar ONGs!"
+        try {
+            String jsonRequest = String.format(
+                    "{"
+                            + "\"nomeFantasia\":\"%s\","
+                            + "\"razaoSocial\":\"%s\","
+                            + "\"cnpj\":\"%s\","
+                            + "\"email\":\"%s\","
+                            + "\"endereco\":\"%s\","
+                            + "\"nomeCoordenador\":\"%s\","
+                            + "\"cpfCoordenador\":\"%s\","
+                            + "\"emailCoordenador\":\"%s\","
+                            + "\"senhaCoordenador\":\"%s\","
+                            + "\"secretKey\":\"%s\""
+                            + "}",
+                    prepararTextoJson(txtNomeFantasia.getText()),
+                    prepararTextoJson(txtRazaoSocial.getText()),
+                    prepararTextoJson(txtCnpj.getText()),
+                    prepararTextoJson(txtEmail.getText()),
+                    prepararTextoJson(txtEndereco.getText()),
+                    prepararTextoJson(txtNomeCoordenador.getText()),
+                    prepararTextoJson(txtCpfCoordenador.getText()),
+                    prepararTextoJson(txtEmailCoordenador.getText()),
+                    prepararTextoJson(txtSenhaCoordenador.getText()),
+                    "qhwdquq6ed78wesdll"
             );
 
-        } else if (respostaApi == 401) {
-            showMessage(
-                    Alert.AlertType.ERROR,
-                    "Autenticação inválida. Confira os dados do administrador!"
+            int respostaApi = executaMetodoAPI(
+                    "http://localhost:8080/ongs/cadastro-com-coordenador",
+                    jsonRequest,
+                    "POST"
             );
 
-        } else {
-            showMessage(
-                    Alert.AlertType.ERROR,
-                    "Erro ao salvar ong! Código: " + respostaApi
-            );
-        }
-    }
+            if (respostaApi == 200) {
+                showMessage(
+                        Alert.AlertType.INFORMATION,
+                        "ONG e coordenador cadastrados com sucesso!"
+                );
 
-    //Faz login na API e obtém o token retornado.
-    private String autenticarAdministrador() throws Exception {
+                onVoltarAoMenu(event);
 
-        String jsonRequest = String.format(
-                "{\"email\":\"%s\",\"senha\":\"%s\"}",
-                prepararTextoJson(txtEmailAdmin.getText()),
-                prepararTextoJson(txtSenhaAdmin.getText())
-        );
+            } else if (respostaApi == 403) {
+                showMessage(
+                        Alert.AlertType.ERROR,
+                        "Chave de cadastro inválida!"
+                );
 
-        URL url = new URL("http://localhost:8080/auth/login");
+            } else if (respostaApi == 400) {
 
-        HttpURLConnection connection =
-                (HttpURLConnection) url.openConnection();
+                if (mensagemErroApi.isEmpty()) {
+                    showMessage(
+                            Alert.AlertType.ERROR,
+                            "Confira os dados informados, incluindo "
+                                    + "o CNPJ da ONG e o CPF do coordenador."
+                    );
+                } else {
+                    showMessage(
+                            Alert.AlertType.ERROR,
+                            mensagemErroApi
+                    );
+                }
 
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.setRequestProperty(
-                "Content-Type",
-                "application/json; charset=UTF-8"
-        );
-
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(jsonRequest.getBytes(StandardCharsets.UTF_8));
-        }
-
-        if (connection.getResponseCode() != 200) {
-            showMessage(
-                    Alert.AlertType.ERROR,
-                    "Não foi possível autenticar. Confira o email e a senha!"
-            );
-            connection.disconnect();
-            return null;
-        }
-
-        StringBuilder textoResposta = new StringBuilder();
-
-        try (BufferedReader entrada = new BufferedReader(
-                new InputStreamReader(
-                        connection.getInputStream(),
-                        StandardCharsets.UTF_8
-                )
-        )) {
-            String linha;
-
-            while ((linha = entrada.readLine()) != null) {
-                textoResposta.append(linha);
+            } else {
+                showMessage(
+                        Alert.AlertType.ERROR,
+                        "Não foi possível concluir o cadastro. Código: "
+                                + respostaApi
+                );
             }
+
+        } catch (Exception e) {
+            showMessage(
+                    Alert.AlertType.ERROR,
+                    "Não foi possível concluir a operação. "
+                            + "Confira se o backend está em execução. "
+                            + "Se houve perda de conexão, consulte os "
+                            + "registros antes de tentar novamente."
+            );
         }
-
-        String resposta = textoResposta.toString();
-
-        connection.disconnect();
-
-        //Localiza o campo token no JSON retornado pela API.
-        Matcher resultado = Pattern.compile(
-                "\"token\"\\s*:\\s*\"([^\"]+)\""
-        ).matcher(resposta);
-
-        if (resultado.find()) {
-            return resultado.group(1);
-        }
-
-        showMessage(
-                Alert.AlertType.ERROR,
-                "A API não retornou um token de acesso!"
-        );
-
-        return null;
     }
 
     @FXML
     public void onVoltarAoMenu(ActionEvent event) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/example/back/menu-view.fxml")
+                getClass().getResource(
+                        "/com/example/back/menu-view.fxml"
+                )
         );
 
         Scene scene = new Scene(loader.load());
 
         Stage stage = (Stage) ((Node) event.getSource())
-                .getScene().getWindow();
+                .getScene()
+                .getWindow();
 
         stage.setScene(scene);
     }
 
-    //Envia a requisição com o token obtido no login.
+    //Envia os dados e recupera a mensagem em caso de erro.
     private int executaMetodoAPI(
             String url,
             String json,
-            String protocoloHttp,
-            String token
+            String protocoloHttp
     ) throws Exception {
+
+        mensagemErroApi = "";
 
         URL urlAPI = new URL(url);
 
         HttpURLConnection connection =
                 (HttpURLConnection) urlAPI.openConnection();
 
-        connection.setRequestMethod(protocoloHttp);
-        connection.setDoOutput(true);
-        connection.setRequestProperty(
-                "Authorization",
-                "Bearer " + token
-        );
+        try {
+            connection.setRequestMethod(protocoloHttp);
+            connection.setDoOutput(true);
 
-        if (!json.isEmpty()) {
             connection.setRequestProperty(
                     "Content-Type",
                     "application/json; charset=UTF-8"
@@ -229,17 +195,50 @@ public class OngController {
             try (OutputStream os = connection.getOutputStream()) {
                 os.write(json.getBytes(StandardCharsets.UTF_8));
             }
+
+            int status = connection.getResponseCode();
+
+            if (status >= 400) {
+                mensagemErroApi = lerResposta(
+                        connection.getErrorStream()
+                );
+            }
+
+            return status;
+
+        } finally {
+            connection.disconnect();
         }
-
-        int status = connection.getResponseCode();
-
-        connection.disconnect();
-
-        return status;
     }
 
-    //Prepara os caracteres especiais dos textos enviados no JSON.
+    //Lê o texto devolvido pelo backend.
+    private String lerResposta(InputStream entrada) throws IOException {
+
+        if (entrada == null) {
+            return "";
+        }
+
+        StringBuilder resposta = new StringBuilder();
+
+        try (BufferedReader leitor = new BufferedReader(
+                new InputStreamReader(
+                        entrada,
+                        StandardCharsets.UTF_8
+                )
+        )) {
+            String linha;
+
+            while ((linha = leitor.readLine()) != null) {
+                resposta.append(linha);
+            }
+        }
+
+        return resposta.toString();
+    }
+
+    //Prepara os caracteres especiais para envio no JSON.
     private String prepararTextoJson(String texto) {
+
         return texto
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
@@ -248,8 +247,10 @@ public class OngController {
                 .replace("\t", "\\t");
     }
 
-    private void showMessage(Alert.AlertType type, String msg) {
-
+    private void showMessage(
+            Alert.AlertType type,
+            String msg
+    ) {
         Alert alerta = new Alert(type);
 
         alerta.setTitle("Mensagem do Sistema");

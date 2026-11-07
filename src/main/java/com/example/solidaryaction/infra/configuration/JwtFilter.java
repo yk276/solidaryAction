@@ -1,6 +1,5 @@
 package com.example.solidaryaction.infra.configuration;
 
-import com.example.solidaryaction.application.DTOs.UsuarioLogado;
 import com.example.solidaryaction.application.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,10 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
-//Filtro executado uma vez por requisição. Decide quais rotas passam sem token e, nas demais, lê
-//o cabeçalho Authorization e valida o JWT antes de continuar a cadeia de filtros.
+//Valida o JWT nas rotas que exigem autenticação por token.
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -40,13 +37,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.startsWith("/auth/login")
                 || uri.startsWith("/cadastrar")
                 || (request.getMethod().equals("POST")
-                && uri.equals("/usuarios/admin"))) {
+                && uri.equals("/usuarios/admin"))
+                || (request.getMethod().equals("POST")
+                && uri.equals("/ongs/cadastro-com-coordenador"))) {
 
             filterChain.doFilter(request, response);
             return;
         }
 
-        //Lê o token enviado no cabeçalho Authorization.
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -54,7 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = authHeader.replace("Bearer ", "");
 
             try {
-
                 var usuarioLogado = tokenService.verificarToken(token);
 
                 var user = new UsernamePasswordAuthenticationToken(
@@ -63,16 +60,21 @@ public class JwtFilter extends OncePerRequestFilter {
                         usuarioLogado.authorities()
                 );
 
-                SecurityContextHolder.getContext().setAuthentication(user);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(user);
 
             } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setStatus(
+                        HttpServletResponse.SC_UNAUTHORIZED
+                );
                 response.getWriter().println("Token invalido");
                 return;
             }
 
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setStatus(
+                    HttpServletResponse.SC_UNAUTHORIZED
+            );
             response.getWriter().println("Token invalido");
             return;
         }

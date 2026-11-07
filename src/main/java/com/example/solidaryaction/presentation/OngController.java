@@ -1,13 +1,8 @@
 package com.example.solidaryaction.presentation;
 
-//Controller REST de Ong. Recebe requisições HTTP, chama o Repository correspondente, monta
-//respostas HTTP e documenta os endpoints para o Swagger.
-
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.OngService;
 import com.example.solidaryaction.application.services.UsuarioService;
-import com.example.solidaryaction.application.DTOs.EnumStatusOng;
-import com.example.solidaryaction.domain.entities.Ong;
 import com.example.solidaryaction.domain.repository.OngRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,11 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//Este controller recebe requisições HTTP desta entidade. @RequestMapping define a rota base e o Swagger usa
-//@Tag/@Operation para documentar os endpoints.
+//Recebe as requisições relacionadas às ONGs.
 @RestController
 @RequestMapping("/ongs")
-@Tag(name = "ONGs", description = "Controller responsável pela gestão das ONGs do sistema.")
+@Tag(
+        name = "ONGs",
+        description = "Controller responsável pela gestão das ONGs do sistema."
+)
 public class OngController {
 
     @Autowired
@@ -34,33 +31,43 @@ public class OngController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Endpoint GET: consulta dados. O método usa o Repository para buscar no banco e devolve a resposta HTTP ao
-    //frontend/Swagger.
     @GetMapping
-    @Operation(summary = "Listar ONGs", description = "Método responsável por consultar todas as ONGs cadastradas.")
-    public ResponseEntity<List<OngResponse>> listarTodos(){
+    @Operation(
+            summary = "Listar ONGs",
+            description = "Método responsável por consultar as ONGs permitidas."
+    )
+    public ResponseEntity<List<OngResponse>> listarTodos() {
 
-        return ResponseEntity.ok(ongService.listarTodasOngsTable());
+        return ResponseEntity.ok(
+                ongService.listarTodasOngsTable()
+        );
     }
 
-    //Endpoint POST: recebe um objeto no corpo da requisição e salva um novo registro usando o Repository.
     @PostMapping("/criar")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Criar ONG", description = "Método responsável por registrar uma nova ONG no sistema.")
-    public ResponseEntity<?> criar(@RequestBody OngRequest ong){
+    @Operation(
+            summary = "Criar ONG",
+            description = "Método responsável por registrar uma nova ONG."
+    )
+    public ResponseEntity<?> criar(@RequestBody OngRequest ong) {
 
         try {
-            OngResponse ongBanco = ongService.salvarOng(ong,0L);
+            OngResponse ongBanco = ongService.salvarOng(ong, 0L);
+
             return ResponseEntity.ok(ongBanco);
-        } catch (Exception e){
+
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/admin")
-    @Operation(summary = "Criar ONG admin", description = "Método responsável por registrar uma nova ONG admin no sistema.")
+    @Operation(
+            summary = "Criar ONG admin",
+            description = "Método responsável por registrar uma nova ONG admin."
+    )
     public ResponseEntity<CriarOngAdminResponse> criarOngAdmin(
-            @RequestBody CriarOngAdminRequest criarOngAdminRequest){
+            @RequestBody CriarOngAdminRequest criarOngAdminRequest) {
 
         try {
             CriarOngAdminResponse respostaSalvar =
@@ -68,16 +75,43 @@ public class OngController {
 
             return ResponseEntity.ok(respostaSalvar);
 
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    //Endpoint GET por ID: recebe o identificador pela URL, procura o registro no Repository e retorna 200 quando
-    //encontra ou 404 quando não encontra.
+    //Recebe o cadastro conjunto enviado pelo desktop.
+    @PostMapping("/cadastro-com-coordenador")
+    @Operation(
+            summary = "Cadastrar ONG com coordenador",
+            description = "Cadastra uma ONG e uma nova conta de coordenador vinculada a ela."
+    )
+    public ResponseEntity<?> cadastrarOngComCoordenador(
+            @RequestBody CadastroOngCoordenadorRequest cadastro) {
+
+        try {
+            OngResponse ong = ongService.cadastrarOngComCoordenador(
+                    cadastro
+            );
+
+            return ResponseEntity.ok(ong);
+
+        } catch (org.springframework.security.access.AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/{id}")
-    @Operation(summary = "Buscar ONG por ID", description = "Método responsável por consultar uma ONG específica")
-    public ResponseEntity<OngResponse> buscarPorId(@PathVariable Long id){
+    @Operation(
+            summary = "Buscar ONG por ID",
+            description = "Método responsável por consultar uma ONG específica."
+    )
+    public ResponseEntity<OngResponse> buscarPorId(
+            @PathVariable Long id) {
 
         OngResponse ongBanco = ongService.buscarPorId(id);
 
@@ -88,56 +122,61 @@ public class OngController {
         return ResponseEntity.notFound().build();
     }
 
-    //Endpoint PATCH: altera somente o status do registro, sem substituir todos os demais campos.
     @PatchMapping("/{id}/status")
-    @Operation(summary = "Atualizar status da ONG", description = "Método responsável por alterar o status de uma ONG.")
+    @Operation(
+            summary = "Atualizar status da ONG",
+            description = "Método responsável por alterar o status de uma ONG."
+    )
     public ResponseEntity<Void> atualizarStatus(
             @PathVariable Long id,
-            @RequestBody AtualizarStatusRequestOng statusRequestOng){
+            @RequestBody AtualizarStatusRequestOng statusRequestOng) {
 
         var atualizarOng = ongService.atualizarStatus(
-                statusRequestOng.status(),id
+                statusRequestOng.status(), id
         );
 
-        if(atualizarOng){
+        if (atualizarOng) {
             return ResponseEntity.ok().build();
         }
 
         return ResponseEntity.notFound().build();
     }
 
-    //Endpoint PUT: busca o registro existente, atualiza seus campos e salva novamente no banco.
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar ONG", description = "Método responsável por atualizar os dados de uma ONG.")
+    @Operation(
+            summary = "Atualizar ONG",
+            description = "Método responsável por atualizar os dados de uma ONG."
+    )
     public ResponseEntity<?> atualizar(
             @PathVariable Long id,
-            @RequestBody OngRequest ong){
+            @RequestBody OngRequest ong) {
 
         try {
-            OngResponse ongBanco = ongService.salvarOng(ong,id);
+            OngResponse ongBanco = ongService.salvarOng(ong, id);
 
-            if(ongBanco == null){
+            if (ongBanco == null) {
                 return ResponseEntity.notFound().build();
             }
 
             return ResponseEntity.ok(ongBanco);
 
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //Endpoint de exclusão: localiza o registro e aplica a lógica de exclusão definida pelo projeto antes de salvar a
-    //alteração.
     @DeleteMapping("/{id}/excluir")
-    @Operation(summary = "Excluir ONG", description = "Método responsável por excluir uma ONG existente do sistema.")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
+    @Operation(
+            summary = "Excluir ONG",
+            description = "Método responsável por aplicar a exclusão lógica de uma ONG."
+    )
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
 
         var atualizarOng = ongService.atualizarStatus(
-                EnumStatusOng.EXCLUIDO,id
+                EnumStatusOng.EXCLUIDO, id
         );
 
-        if(atualizarOng){
+        if (atualizarOng) {
             return ResponseEntity.ok().build();
         }
 
@@ -147,7 +186,7 @@ public class OngController {
     @PostMapping("/{ongId}/coordenadores")
     public ResponseEntity<?> criarCoordenador(
             @PathVariable Long ongId,
-            @RequestBody UsuarioRequest usuario){
+            @RequestBody UsuarioRequest usuario) {
 
         try {
             UsuarioResponse coordenador = usuarioService.criarCoordenador(
