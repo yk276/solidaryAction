@@ -1,7 +1,7 @@
 package com.example.solidaryaction.infra.external;
 
 import com.example.solidaryaction.domain.interfaces.ICnpjExternalRepository;
-import com.example.solidaryaction.infra.dto.BrasilApiCnpjResponse;
+import com.example.solidaryaction.infra.dto.CnpjResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class CnpjExternalRepository implements ICnpjExternalRepository {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public BrasilApiCnpjResponse buscarCnpj(String cnpj) {
+    public CnpjResponse buscarCnpj(String cnpj) {
 
         if (cnpj == null || cnpj.trim().isEmpty()) {
             throw new IllegalArgumentException("Informe o CNPJ!");
@@ -58,9 +58,9 @@ public class CnpjExternalRepository implements ICnpjExternalRepository {
 
             if (response.statusCode() == 200) {
 
-                BrasilApiCnpjResponse dados = objectMapper.readValue(
+                CnpjResponse dados = objectMapper.readValue(
                         response.body(),
-                        BrasilApiCnpjResponse.class
+                        CnpjResponse.class
                 );
 
                 if (dados.getCnpj() == null

@@ -1,9 +1,9 @@
 package com.example.solidaryaction.domain.interfaces;
 
-import com.example.solidaryaction.infra.dto.BrasilApiCnpjResponse;
+import com.example.solidaryaction.infra.dto.CnpjResponse;
 
 public interface ICnpjExternalRepository {
 
-    BrasilApiCnpjResponse buscarCnpj(String cnpj);
+    CnpjResponse buscarCnpj(String cnpj);
 
 }

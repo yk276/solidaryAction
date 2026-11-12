@@ -1,6 +1,6 @@
 package com.example.solidaryaction.presentation;
 
-import com.example.solidaryaction.application.DTOs.CnpjResponse;
+import com.example.solidaryaction.application.DTOs.CnpjConsultaResponse;
 import com.example.solidaryaction.application.services.CnpjService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +34,7 @@ public class CnpjController {
             @PathVariable String cnpj) {
 
         try {
-            CnpjResponse resultado = cnpjService.buscarCnpj(cnpj);
+            CnpjConsultaResponse resultado = cnpjService.buscarCnpj(cnpj);
 
             return ResponseEntity.ok(resultado);
 

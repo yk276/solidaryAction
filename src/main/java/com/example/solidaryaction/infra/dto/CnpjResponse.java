@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BrasilApiCnpjResponse {
+public class CnpjResponse {
 
     private String cnpj;
 

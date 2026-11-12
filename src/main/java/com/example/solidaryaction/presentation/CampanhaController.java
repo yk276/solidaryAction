@@ -5,7 +5,7 @@ package com.example.solidaryaction.presentation;
 
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.application.services.CampanhaService;
-import com.example.solidaryaction.domain.repository.CampanhaRepository;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,6 @@ import java.util.List;
 @RequestMapping("/campanhas")
 @Tag(name = "Campanhas", description = "Controller responsável pela gestão das campanhas do sistema.")
 public class CampanhaController {
-
-    @Autowired
-    private CampanhaRepository campanhaRepository;
 
     @Autowired
     private CampanhaService campanhaService;
