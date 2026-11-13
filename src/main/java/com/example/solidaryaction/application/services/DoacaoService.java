@@ -2,7 +2,7 @@ package com.example.solidaryaction.application.services;
 
 import com.example.solidaryaction.application.DTOs.*;
 import com.example.solidaryaction.domain.entities.Doacao;
-import com.example.solidaryaction.domain.entities.Campanha;
+import com.example.solidaryaction.domain.entities.Campa;
 import com.example.solidaryaction.domain.repository.DoacaoRepository;
 import com.example.solidaryaction.domain.repository.CampanhaRepository;
 import com.example.solidaryaction.domain.repository.DoadorRepository;
@@ -83,7 +83,7 @@ public class DoacaoService {
                     new SimpleGrantedAuthority("ROLE_ADMIN")
             );
 
-            Campanha campanha;
+            Campa campanha;
 
             if (administrador) {
                 campanha = campanhaRepository

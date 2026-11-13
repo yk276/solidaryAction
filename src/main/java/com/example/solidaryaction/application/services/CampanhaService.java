@@ -1,7 +1,7 @@
 package com.example.solidaryaction.application.services;
 
 import com.example.solidaryaction.application.DTOs.*;
-import com.example.solidaryaction.domain.entities.Campanha;
+import com.example.solidaryaction.domain.entities.Campa;
 import com.example.solidaryaction.domain.repository.CampanhaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +73,7 @@ public class CampanhaService {
                 throw new IllegalArgumentException("ONG não encontrada!");
             }
 
-            Campanha campanhaBanco = new Campanha(campanha);
+            Campa campanhaBanco = new Campa(campanha);
 
             campanhaBanco.setOng(ong);
 
@@ -89,7 +89,7 @@ public class CampanhaService {
                     new SimpleGrantedAuthority("ROLE_ADMIN")
             );
 
-            Campanha campanhaBanco;
+            Campa campanhaBanco;
 
             if (administrador) {
                 campanhaBanco = campanhaRepository.findById(id).orElse(null);
@@ -126,7 +126,7 @@ public class CampanhaService {
 
         var usuarioLogado = getUsuarioLogado();
 
-        Campanha campanha;
+        Campa campanha;
 
         if (usuarioLogado.authorities().contains(
                 new org.springframework.security.core.authority.SimpleGrantedAuthority(
@@ -163,7 +163,7 @@ public class CampanhaService {
                 new SimpleGrantedAuthority("ROLE_ADMIN")
         );
 
-        Campanha campanhaBanco;
+        Campa campanhaBanco;
 
         if (administrador) {
             campanhaBanco = campanhaRepository.findById(id).orElse(null);

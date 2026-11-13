@@ -34,7 +34,7 @@ public class Doacao {
 
     @ManyToOne
     @JoinColumn(name = "campanha_id")
-    private Campanha campanha;
+    private Campa campanha;
 
     @ManyToOne
     @JoinColumn(name = "doador_id")

@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Campanha {
+public class Campa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,7 +51,7 @@ public class Campanha {
         return totalArrecadado.compareTo(metaFinanceira) >= 0;
     }
 
-    public Campanha(CampanhaRequest campanha) {
+    public Campa(CampanhaRequest campanha) {
         this.setTitulo(campanha.titulo());
         this.setDescricao(campanha.descricao());
         this.setMetaFinanceira(campanha.metaFinanceira());
